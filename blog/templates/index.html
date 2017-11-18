@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block left %}
+{% if user.is_authenticated %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-5">
+				<img src="http://oze8rzhaq.bkt.clouddn.com/u=3002875029,378291427&fm=26&gp=0.jpg" style="width: 80px;height: 80px;"></div>
+			<div class="col-xs-7">
+				<p class="user-name">用户名</p>
+				<p class="user-about">用户个性签名</p>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+			<div class="col-xs-4">
+				<a href="#"><p><span class="glyphicon glyphicon-home">主页</span></p></a> 
+			</div>
+			<div class="col-xs-4">
+				<a href="{{ url_for('main.index_resp',index='seting') }}"><p><span class="glyphicon glyphicon-cog">设置</span></p></a> 
+			</div>
+			<div class="col-xs-4">
+				<a href="{{ url_for('auth.user_logout') }}"><p><span class="glyphicon glyphicon-log-out	">登出</span></p></a> 
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<a href="#"><p class="message" style="margin: 0px">站内消息</p></a>
+	</div>
+</div>
+{% else %}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			每日一句
+		</h3>
+	</div>
+	<div class="panel-body">
+		You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
+		你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block right %}
+{% if index=='index' %}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			每日一句
+		</h3>
+	</div>
+	<div class="panel-body">
+		You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
+		你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
+	</div>
+</div>
+{% elif index=='seting' %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+		<ul class="nav nav-tabs">
+		    <li><a href="{{ url_for('main.user_seting_info', info = 'info') }}">个人信息</a></li>
+		    <li><a href="{{ url_for('main.user_seting_info', info = 'passwd') }}">密码设置</a></li>
+		    <li><a href="{{ url_for('main.user_seting_info', info = 'email') }}">邮箱设置</a></li>
+		</ul>
+    </div>
+    <div class="panel-body">
+		{% if info == 'info' %}
+		<h1>a</h1>
+		{% elif info == 'passwd' %}
+		<h1>b</h1>
+		{% elif info =='email' %}
+		<h1>c</h1>
+		{% endif %}
+​    </div>
+</div>
+{% endif %}
+
+{% endblock %}
