@@ -24,6 +24,7 @@ def user_login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.verify_password(form.password.data):
             login_user(user)
+            user.ping()
             flash(u'登录成功')
             return redirect(url_for('main.index'))
         flash('Invalid username or password.')
