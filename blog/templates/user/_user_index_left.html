@@ -1,0 +1,56 @@
+{% if user.is_self(current_user) %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-5">
+				<img src="{{ url_for('static',filename='user/avatar/'+user.avatar) }}" style="width: 80px;height: 80px;"></div>
+			<div class="col-xs-7">
+				<p class="user-name">{{ user.name }}</p>
+				<p class="user-about">{{ user.abortme }}</p>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+			<div class="col-xs-4">
+				<a href="{{ url_for('main.user_index',id=user.id) }}"><p><span class="glyphicon glyphicon-home">主页</span></p></a> 
+			</div>
+			<div class="col-xs-4">
+				<a href="#"><p><span class="glyphicon glyphicon-cog">设置</span></p></a> 
+			</div>
+			<div class="col-xs-4">
+				<a href="{{ url_for('auth.user_logout') }}"><p><span class="glyphicon glyphicon-log-out	">登出</span></p></a> 
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<a href="#"><p class="message" style="margin: 0px">站内消息</p></a>
+	</div>
+</div>
+{% else %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-5">
+				<img src="{{ url_for('static',filename='user/avatar/'+user.avatar) }}" style="width: 80px;height: 80px;"></div>
+			<div class="col-xs-7">
+				<p class="user-name">{{ user.name }}</p>
+				<p class="user-about">{{ user.abortme }}</p>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+			<ul class="nav nav-pills nav-justified">
+			<li><a href="{{ url_for('main.user_index',id=user.id) }}"><p><span class="glyphicon glyphicon-home">主页</span></p></a></li>
+			<li>
+				<a href="#"><p><span class="glyphicon glyphicon-cog">关注</span></p></a> 
+			</li>
+			<li>
+				<a href="#"><p><span class="glyphicon glyphicon-log-out	">发信</span></p></a> 
+			</li>
+			</ul>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<a href="#"><p class="message" style="margin: 0px">站内消息</p></a>
+	</div>
+</div>
+{% endif %}
+

@@ -26,7 +26,7 @@ def user_login():
             login_user(user)
             user.ping()
             flash(u'登录成功')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.home'))
         flash('Invalid username or password.')
     return render_template('user/user_login.html', form=form)
 
@@ -36,4 +36,4 @@ def user_login():
 def user_logout():
     logout_user()
     flash('You have been logged out.')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.home'))

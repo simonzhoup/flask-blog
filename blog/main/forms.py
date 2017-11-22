@@ -1,8 +1,13 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SubmitField, PasswordField, ValidationError
 from wtforms.validators import Required, Length, Email, EqualTo, Regexp
 from ..models import User
 from flask_login import current_user
+from flask_uploads import UploadSet, IMAGES
+
+
+images = UploadSet('images', IMAGES)
 
 
 class UserInfo(FlaskForm):
@@ -22,3 +27,9 @@ class UserPasswd(FlaskForm):
     def validate_oldpassword(self, field):
         if not current_user.verify_password(field.data):
             raise ValidationError('密码输入有误')
+
+
+class Avatar(FlaskForm):
+    avatar = FileField('上传头像', validators=[
+                       FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
+    submit = SubmitField('提交')

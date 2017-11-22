@@ -1,0 +1,30 @@
+
+{% if index=='index' %}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			每日一句
+		</h3>
+	</div>
+	<div class="panel-body">
+		You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
+		你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
+	</div>
+</div>
+{% elif 'seting' in index %}
+<div class="panel panel-default" style="padding-bottom: 20px;">
+    <div class="panel-heading">
+		<ul class="nav nav-tabs">
+		    <li {% if index=='seting1' %}class="active"{% endif %}><a href="{{ url_for('main.info_resp') }}">个人信息</a></li>
+		    <li {% if index=='seting2' %}class="active"{% endif %}><a href="{{ url_for('main.passwd_resp') }}">密码设置</a></li>
+		    <li {% if index=='seting3' %}class="active"{% endif %}><a href="{{ url_for('main.email_resp') }}">头像设置</a></li>
+		</ul>
+    </div>
+    <div class="panel-body">
+    	<div class="user-form col-md-8 col-md-offset-2">
+		{{ wtf.quick_form(form) }}
+		</div>
+​    </div>
+</div>
+
+{% endif %}

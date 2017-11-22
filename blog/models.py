@@ -1,6 +1,6 @@
 from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime
 
 
@@ -18,8 +18,9 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     abortme = db.Column(db.Text())
-    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    member_since = db.Column(db.DateTime(), default=datetime.now)
+    last_seen = db.Column(db.DateTime(), default=datetime.now)
+    avatar = db.Column(db.String(64))
 
     @property
     def password(self):
@@ -35,3 +36,6 @@ class User(UserMixin, db.Model):
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
+
+    def is_self(self, current_user):
+        return current_user.is_authenticated and self.id == current_user.id
