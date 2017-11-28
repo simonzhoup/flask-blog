@@ -73,3 +73,24 @@ class Topic(db.Model):
     topic = db.Column(db.String(64), unique=True, index=True)
     info = db.Column(db.Text())
     img = db.Column(db.String(64))
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    clink = db.Column(db.Integer, default=1)
+
+    def ping(self):
+        self.clink += 1
+        db.session.add(self)
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.Integer, index=True)
+    tpoic = db.Column(db.Integer, index=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    clink = db.Column(db.Integer, default=1)
+    head = db.Column(db.String(64))
+    body = db.Column(db.Text())
+
+    def ping(self):
+        self.clink += 1
+        db.session.add(self)

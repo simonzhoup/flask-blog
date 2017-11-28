@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% if title %}
+{% block title %}
+<title>围脖blog -- {{ title }}</title>
+{% endblock %}
+{% endif %}
+
+{% block left %}
+{% include '_user_left.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-default">
+	<div class="panel-heading">
+	话题 <b>{{ t.topic }}</b> 下的帖子
+	</div>
+    <ul class="list-group">	
+		<li class="list-group-item">帖子</li>
+	</ul>
+</div>
+{% endblock %}

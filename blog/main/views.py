@@ -66,7 +66,7 @@ def user_index(id):
     user = User.query.get_or_404(id)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    return render_template('index.html', user=user, index='index', c1=c1, c2=c2, title=user.username + '的主页')
+    return render_template('index.html', user=user, index='index,info', c1=c1, c2=c2, title=user.username + '的主页')
 
 # 用户设置
 
@@ -131,20 +131,26 @@ def user_unfollow(id):
     return redirect(url_for('main.user_index', id=user.id))
 
 
-@main.route('/topics', methods=['GET','POST'])
+@main.route('/topics', methods=['GET', 'POST'])
+@login_required
 def topics():
     topics = Topic.query.all()
     form = TopicForm()
     if form.validate_on_submit():
-        t = Topic(topic=form.topic_name.data,info=form.topic_info.data)
+        t = Topic(topic=form.topic_name.data, info=form.topic_info.data)
         db.session.add(t)
         img = form.topic_img.data
         img.save('blog/static/topics/%s.jpg' % t.id)
         t.img = '%s.jpg' % t.topic
         db.session.add(t)
-        return redirect(url_for('main.topics',form=form,topics=topics,title='话题广场'))
-    return render_template('topics/topics.html',form=form,topics=topics,title='话题广场')
-# @main.route('/topics/add',methods=['GET','POST'])
-# def add_topic():
-#     form = TopicForm()
-#     return render_template('topics/add_topic.html',form=form)
+        return redirect(url_for('main.topics', form=form, topics=topics, title='话题广场'))
+    return render_template('topics/topics.html', form=form, topics=topics, title='话题广场')
+
+
+@main.route('/topics/<topic>')
+def topic(topic):
+    t = Topic.query.filter_by(topic=topic).first()
+    if not t:
+        abort(404)
+    t.ping()
+    return render_template('topics/topic.html', t=t, title=topic)

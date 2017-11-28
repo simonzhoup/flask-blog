@@ -13,6 +13,9 @@
 		</div>
 	</div>
 </div>
+{% if 'info' in index %}
+{% include 'user/_user_post.html' %}
+{% endif %}
 {% elif 'seting' in index %}
 <div class="panel panel-default" style="padding-bottom: 20px;">
     <div class="panel-heading">

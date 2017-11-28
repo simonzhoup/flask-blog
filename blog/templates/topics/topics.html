@@ -16,9 +16,9 @@
 {% for t in topics %}
 <div class="panel panel-default col-xs-3 text-center" style="width: 160px;height: 160px; margin-right: 10px;">
     <div class="panel-body" style="font-size: 60px">
-		<img src="{{ url_for('static',filename='topics/'+t.img) }}" style="width: 80px;height: 80px;">
+		<a href="{{ url_for('main.topic',topic=t.topic) }}"><img src="{{ url_for('static',filename='topics/'+t.img) }}" style="width: 80px;height: 80px;">
+    <p style="font-size: 16px;margin-top:10px">{{ t.topic }}</p></a>
     </div>
-    <p style="font-size: 18px">{{ t.topic }}</p>
 </div>
 {% endfor %}
 {% endif %}
@@ -26,8 +26,8 @@
 <div class="panel panel-default col-xs-3 text-center" style="width: 160px;height: 160px;">
     <div class="panel-body" style="font-size: 60px">
         <a data-toggle="modal" href="#add-topic"><span class="glyphicon glyphicon-plus"></span>
+    <p style="font-size: 16px;margin-top:10px">新话题</p></a>
     </div>
-    <p style="font-size: 18px">添加一个新话题</p></a>
 
 </div>
 
