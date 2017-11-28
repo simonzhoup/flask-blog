@@ -1,0 +1,21 @@
+<div class="panel panel-default">
+	<div class="panel-body">
+		<table class="table table-hover">
+		  	<caption>{{ user.username }}关注的人</caption>
+		  	<thead>
+		    	<tr>
+		      		<th>关注的人</th>
+		      		<th>关注时间</th>
+		    	</tr>
+		  	</thead>
+		  	<tbody>
+		  	{% for f in all_followed %}
+		    	<tr>
+		      		<td><a href="{{ url_for('main.user_index',id=f.followed_id) }}">{{ User.query.filter_by(id=f.followed_id).first().username }}</a></td>
+		      		<td>{{ f.timestamp }}</td>
+		    	</tr>
+		    {% endfor %}
+		    </tbody>
+		</table>
+	</div>
+</div>

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% if title %}
+{% block title %}
+<title>围脖blog -- {{ title }}</title>
+{% endblock %}
+{% endif %}
+
+{% block left %}
+{% include '_user_left.html' %}
+{% endblock %}
+
+{% block right %}
+{% if topics %}
+{% for t in topics %}
+<div class="panel panel-default col-xs-3 text-center" style="width: 160px;height: 160px; margin-right: 10px;">
+    <div class="panel-body" style="font-size: 60px">
+		<img src="{{ url_for('static',filename='topics/'+t.img) }}" style="width: 80px;height: 80px;">
+    </div>
+    <p style="font-size: 18px">{{ t.topic }}</p>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="panel panel-default col-xs-3 text-center" style="width: 160px;height: 160px;">
+    <div class="panel-body" style="font-size: 60px">
+        <a data-toggle="modal" href="#add-topic"><span class="glyphicon glyphicon-plus"></span>
+    </div>
+    <p style="font-size: 18px">添加一个新话题</p></a>
+
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="add-topic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">添加新话题</h4>
+            </div>
+            <div class="modal-body">
+            	{{ wtf.quick_form(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="submit" class="btn btn-primary" onclick="load()">添加</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+function load(){
+    //下面两种方法效果是一样的
+    // document.getElementById("target").onclick();
+    document.getElementById("submit").click();
+}
+document.getElementById("submit").style.display="none"
+</script>
+{% endblock %}

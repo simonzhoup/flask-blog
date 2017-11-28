@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+{% block head %}
+<head>
+	<meta charset="utf-8">
+    {% block title %}
+    <title>围脖blog</title>
+    {% endblock %}
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+</head>
+{% endblock %}
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top col-md-12">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('main.home') }}">围脖blog</a>
+            </div>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">热点话题</a></li>
+                    <li><a href="{{ url_for('main.topics') }}">所有话题</a></li>
+                </ul>
+                
+                {% if current_user.is_authenticated %}
+                <div class="navbar-form navbar-right">
+                    <a class="btn btn-info" id="new-btn" href=" #">
+                        新话题
+                    </a>
+                </div>
+                
+                {% else %}
+                <div class="navbar-form navbar-right">
+                    <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                      <button type="button" class="btn btn-info btn-primary dropdown-toggle" data-toggle="dropdown">
+                        登录  <b class="caret"></b>
+                      </button>
+                        <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('auth.user_login') }}">登录 </a></li>
+                        <li><a href="{{ url_for('auth.user_register') }}">注册</a></li>
+                        <li><a href="#">找回密码</a></li>
+                        </ul>
+                    </li>
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="navbar-form navbar-right" role="search">
+                    <div class="form-group">
+                        <input onkeydown="if(event.keyCode==13){search();}" type="text" id="search" class="form-control" name="search" placeholder="输入关键词">
+                    </div>
+                    <a class="btn btn-default" id="search-btn">
+                        搜索
+                    </a>
+                </div>
+            </div>
+        </div><!--end nav container-->
+    </nav><!--end nav-->
+
+    {% block content %}
+    <div id="warp">
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        <div class="row col-md-12">
+        {% block inside_row %}
+            <div class="col-md-3" id="left">
+                {% block left %}{% endblock %}
+            </div>
+            <!--left: user info-->
+            <div class="col-md-8" id="right">
+                {% block right %}{% endblock %}
+            </div>
+            <!--right: topics-->
+        {% endblock %}
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+
+    <footer id="footer">
+        <div class="container clearfix">
+            <p class="muted credit pull-right"> copyright by simonzhoup@gmail.com
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+{% block scripts %}
+{% endblock %}
+

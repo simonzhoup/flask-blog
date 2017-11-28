@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+{{ super() }}
+{% if title %}
+{% block title %}
+<title>围脖blog -- {{ title }}</title>
+{% endblock %}
+{% endif %}
+<style>
+{% if index!='seting3' %}
+#submit {float:right; background-color: #428ccb; color: #ffffff;}
+{% else %}
+#submit {background-color: #428ccb; color: #ffffff;}
+{% endif %}
+</style>
+{% endblock %}
+
+{% block left %}
+{% include 'user/_user_index_left.html' %}
+{% endblock %}
+
+{% block right %}
+{% include 'user/_user_index_right.html' %}
+{% endblock %}
