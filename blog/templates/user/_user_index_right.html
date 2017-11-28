@@ -1,0 +1,40 @@
+{% import "bootstrap/wtf.html" as wtf %}
+<div class="right-head">
+{% if 'index' in index %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="col-xs-2">
+			<img src="{{ url_for('static',filename='user/avatar/'+user.avatar) }}" style="width: 100px;height: 100px;">
+		</div>
+		<div class="col-xs-10">
+			<h4>@{{ user.username }} {% if user.abortme %}<small> {{ user.abortme }}</small>{% endif %}</h4>
+			<h4><small>{{ user.email }}</small></h4>
+			<h5><a href="{{ url_for('main.user_follower_all', id=user.id) }}"> 关注者 <span class="badge">{{ c2 }}</span></a> <a href="{{ url_for('main.user_followed_all', id=user.id) }}"> 关注了 <span class="badge">{{ c1 }}</span></a></h5>
+		</div>
+	</div>
+</div>
+{% elif 'seting' in index %}
+<div class="panel panel-default" style="padding-bottom: 20px;">
+    <div class="panel-heading">
+		<ul class="nav nav-tabs">
+		    <li {% if index=='seting1' %}class="active"{% endif %}><a href="{{ url_for('main.info_resp') }}">个人信息</a></li>
+		    <li {% if index=='seting2' %}class="active"{% endif %}><a href="{{ url_for('main.passwd_resp') }}">密码设置</a></li>
+		    <li {% if index=='seting3' %}class="active"{% endif %}><a href="{{ url_for('main.email_resp') }}">头像设置</a></li>
+		</ul>
+    </div>
+    <div class="panel-body">
+    	<div class="user-form col-md-8 col-md-offset-2">
+		{{ wtf.quick_form(form) }}
+		</div>
+​    </div>
+</div>
+
+{% endif %}
+</div>
+<div class="right-body">
+{% if 'follower-all' in index %}
+{% include 'user/_follower_all.html' %}
+{% elif 'followed-all' in index %}
+{% include 'user/_followed_all.html' %}
+{% endif %}
+</div>

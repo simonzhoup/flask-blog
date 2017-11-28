@@ -1,0 +1,28 @@
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-5">
+				<img src="{{ url_for('static',filename='user/avatar/'+current_user.avatar) }}" style="width: 80px;height: 80px;"></div>
+			<div class="col-xs-7">
+				<p class="user-name">{{ current_user.username }}</p>
+				{% if current_user.abortme %}
+				<p class="user-about">{{ current_user.abortme }}</p>
+				{% endif %}
+			</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+			<div class="col-xs-4">
+				<a href="{{ url_for('main.user_index',id=current_user.id) }}"><p><span class="glyphicon glyphicon-home">主页</span></p></a> 
+			</div>
+			<div class="col-xs-4">
+				<a href="{{ url_for('main.user_seting') }}"><p><span class="glyphicon glyphicon-cog">设置</span></p></a> 
+			</div>
+			<div class="col-xs-4">
+				<a href="{{ url_for('auth.user_logout') }}"><p><span class="glyphicon glyphicon-log-out	">登出</span></p></a> 
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<a href="#"><p class="message" style="margin: 0px">站内消息</p></a>
+	</div>
+</div>
