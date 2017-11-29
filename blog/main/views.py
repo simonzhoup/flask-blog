@@ -5,7 +5,7 @@ from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
 from ..models import User, Follow, Topic
-from .forms import UserInfo, UserPasswd, Avatar, TopicForm
+from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm
 from .. import db
 
 # 用户设置路由
@@ -154,3 +154,10 @@ def topic(topic):
         abort(404)
     t.ping()
     return render_template('topics/topic.html', t=t, title=topic)
+
+
+@main.route('/new-post', methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    return render_template('topics/new_post.html', form=form, title='新帖子')

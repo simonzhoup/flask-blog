@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+{{ super() }}
+<title>围脖blog -- 新帖子</title>
+<style type="text/css">
+#topic {
+	display: table;
+}
+.form-group:nth-child(4) {
+	display: table;
+}
+</style>
+{% endblock %}
+
+
+{% block left %}
+{% include '_user_left.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-default">
+	<div class="panel-heading">
+	<b>新帖子</b>
+	</div>
+    <div class="panel-body">
+    {{ wtf.quick_form(form) }}
+    </div>
+</div>
+{% endblock %}

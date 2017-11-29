@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, SubmitField, PasswordField, ValidationError,TextAreaField
+from wtforms import StringField, SubmitField, PasswordField, ValidationError, TextAreaField, SelectField
 from wtforms.validators import Required, Length, Email, EqualTo, Regexp
-from ..models import User
+from ..models import User, Topic
 from flask_login import current_user
 from flask_uploads import UploadSet, IMAGES
 
@@ -34,8 +34,22 @@ class Avatar(FlaskForm):
                        FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
     submit = SubmitField('提交')
 
+
 class TopicForm(FlaskForm):
-    topic_name = StringField('话题名',validators=[Required(),Length(1,64)])
+    topic_name = StringField('话题名', validators=[Required(), Length(1, 64)])
     topic_info = TextAreaField('话题描述')
-    topic_img = FileField('话题图片',validators=[FileRequired(),FileAllowed(['jpg','png'],'只能上传图片')])
+    topic_img = FileField('话题图片', validators=[
+                          FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
     submit = SubmitField('提交')
+
+
+class PostForm(FlaskForm):
+    head = StringField('标题', validators=[Required(), Length(1, 64)])
+    info = TextAreaField('内容')
+    topic = SelectField('所属话题', coerce=int)
+    submit = SubmitField('提交')
+
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.topic.choices = [(t.id, t.topic)
+                              for t in Topic.query.order_by(Topic.id).all()]

@@ -28,7 +28,7 @@
                 
                 {% if current_user.is_authenticated %}
                 <div class="navbar-form navbar-right">
-                    <a class="btn btn-info" id="new-btn" href=" #">
+                    <a class="btn btn-info" id="new-btn" href="{{ url_for('main.new_post') }}">
                         新话题
                     </a>
                 </div>

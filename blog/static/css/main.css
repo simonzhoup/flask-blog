@@ -49,3 +49,8 @@ footer {
 .topic {
 	padding-right: 20px;
 }
+#submit {
+	float:right;
+	background-color: #5bc0de;
+	color: #fff;
+}
