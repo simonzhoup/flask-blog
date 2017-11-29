@@ -1,11 +1,10 @@
-#!/home/simon/flask-blog/venv/bin/python
-
-# -*- coding: utf-8 -*-
-import re
+#!/home/zhou/flask-blog/venv/bin/python3.5
+# EASY-INSTALL-ENTRY-SCRIPT: 'qiniu==7.2.0','console_scripts','qiniupy'
+__requires__ = 'qiniu==7.2.0'
 import sys
-
-from qiniu.main import main
+from pkg_resources import load_entry_point
 
 if __name__ == '__main__':
-    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(main())
+    sys.exit(
+        load_entry_point('qiniu==7.2.0', 'console_scripts', 'qiniupy')()
+    )

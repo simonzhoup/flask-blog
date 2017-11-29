@@ -2,7 +2,12 @@
     <div class="panel-heading ">
     {{ user.username }}参与的话题
     </div>
-	<ul class="list-group">	
-		<li class="list-group-item">帖子</li>
+	<ul class="list-group">
+		{% for p in posts %}
+		<li class="list-group-item">
+		<p>{{ p.head }}<small>{{ p.body }}</small></p>
+		</li>
+		{% endfor %}
+		
 	</ul>
 </div>

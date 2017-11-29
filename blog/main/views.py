@@ -4,7 +4,7 @@ from flask import render_template, make_response, redirect, url_for, request, fl
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
-from ..models import User, Follow, Topic
+from ..models import User, Follow, Topic, Post
 from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm
 from .. import db
 
@@ -66,7 +66,8 @@ def user_index(id):
     user = User.query.get_or_404(id)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    return render_template('index.html', user=user, index='index,info', c1=c1, c2=c2, title=user.username + '的主页')
+    posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
+    return render_template('index.html', user=user,posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页')
 
 # 用户设置
 
@@ -160,4 +161,8 @@ def topic(topic):
 @login_required
 def new_post():
     form = PostForm()
+    if form.validate_on_submit():
+        p = Post(author=current_user.id,tpoic=form.topic.data,head=form.head.data,body=form.body.data)
+        db.session.add(p)
+        return redirect(url_for('main.topics'))
     return render_template('topics/new_post.html', form=form, title='新帖子')

@@ -45,7 +45,7 @@ class TopicForm(FlaskForm):
 
 class PostForm(FlaskForm):
     head = StringField('标题', validators=[Required(), Length(1, 64)])
-    info = TextAreaField('内容')
+    body = TextAreaField('内容',validators=[Required()])
     topic = SelectField('所属话题', coerce=int)
     submit = SubmitField('提交')
 
