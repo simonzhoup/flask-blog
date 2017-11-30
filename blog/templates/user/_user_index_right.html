@@ -1,6 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %}
-<div class="right-head">
 {% if 'index' in index %}
+<div class="right-head">
 <div class="panel panel-default">
 	<div class="panel-body">
 		<div class="col-xs-2">
@@ -12,6 +12,7 @@
 			<h5><a href="{{ url_for('main.user_follower_all', id=user.id) }}"> 关注者 <span class="badge">{{ c2 }}</span></a> <a href="{{ url_for('main.user_followed_all', id=user.id) }}"> 关注了 <span class="badge">{{ c1 }}</span></a></h5>
 		</div>
 	</div>
+</div>
 </div>
 {% if 'info' in index %}
 {% include 'user/_user_post.html' %}
@@ -33,11 +34,12 @@
 </div>
 
 {% endif %}
-</div>
-<div class="right-body">
 {% if 'follower-all' in index %}
+<div class="right-body">
 {% include 'user/_follower_all.html' %}
-{% elif 'followed-all' in index %}
-{% include 'user/_followed_all.html' %}
-{% endif %}
 </div>
+{% elif 'followed-all' in index %}
+<div class="right-body">
+{% include 'user/_followed_all.html' %}
+</div>
+{% endif %}
