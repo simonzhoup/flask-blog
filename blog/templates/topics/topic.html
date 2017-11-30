@@ -15,7 +15,7 @@
     <div class="panel-heading">
 		<ol class="breadcrumb" style="background-color: #337ab7;padding: 0px;margin-bottom: 0px;">
 		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
-		    <li><a href="" style="color: #fff;"><strong>{{ t.topic }}</strong></a></li>
+		    <li><a style="color: #fff;"><strong>{{ t.topic }}</strong></a></li>
 		</ol>
     </div>
     <div class="panel-body">
@@ -47,7 +47,28 @@
 	话题 <b>{{ t.topic }}</b> 下的帖子
 	</div>
     <ul class="list-group">	
-		<li class="list-group-item">帖子</li>
+		{% for p in Post.query.filter_by(tpoic=t.id).all() %}
+		<div class="list-group-item col-xs-12">
+			<div class ="col-xs-9">
+				<h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3>
+				<p class="list-meta col-xs-12">
+					<a href="{{ url_for('main.user_index',id=User.query.filter_by(id=t.author).first().id) }}">
+					<button type="button" class="btn btn-success btn-xs">
+					<span class="glyphicon glyphicon-user"></span>
+					作者：{{ User.query.filter_by(id=t.author).first().username }}
+					</button></a>
+					<button type="button" class="btn btn-default btn-xs" id="read">
+					<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="time">
+					<span class="glyphicon glyphicon-time"></span> {{ moment(p.timestamp).fromNow(refresh=True) }}
+					</button>
+				</p>
+			</div>
+			<div class="col-xs-3">
+			</div>
+		</div>
+		{% endfor %}		
 	</ul>
 </div>
 {% endblock %}
