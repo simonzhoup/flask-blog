@@ -162,6 +162,9 @@ def topic(topic):
 @login_required
 def new_post():
     form = PostForm()
+    if Topic.query.all() == []:
+        flash('还没有任何主题，添加一个吧。')
+        return redirect(url_for('main.topics'))
     if form.validate_on_submit():
         p = Post(author=current_user.id, tpoic=form.topic.data,
                  head=form.head.data, body=form.body.data)

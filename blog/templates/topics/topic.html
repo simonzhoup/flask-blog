@@ -46,6 +46,11 @@
 	<div class="panel-heading">
 	话题 <b>{{ t.topic }}</b> 下的帖子
 	</div>
+	{% if Post.query.filter_by(tpoic=t.id).all() == [] %}
+	<div class="panel-body">
+	<div class="alert alert-info">这个话题下还没有发表过帖子～</div>
+	</div>
+	{% endif %}
     <ul class="list-group">	
 		{% for p in Post.query.filter_by(tpoic=t.id).all() %}
 		<div class="list-group-item col-xs-12">

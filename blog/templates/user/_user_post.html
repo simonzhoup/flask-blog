@@ -2,6 +2,11 @@
     <div class="panel-heading ">
     <strong>{{ user.username }}</strong>的文章
     </div>
+	{% if posts == [] %}
+	<div class="panel-body">
+	<div class="alert alert-info">这里还没有任何文章哟～</div>
+	</div>
+	{% else %}
 	<ul class="list-group">
 		{% for p in posts %}
 		<div class="list-group-item col-xs-12">
@@ -26,4 +31,5 @@
 		</div>
 		{% endfor %}		
 	</ul>
+	{% endif %}
 </div>
