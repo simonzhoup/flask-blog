@@ -18,8 +18,8 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     abortme = db.Column(db.Text())
-    member_since = db.Column(db.DateTime, default=datetime.now)
-    last_seen = db.Column(db.DateTime, default=datetime.now)
+    member_since = db.Column(db.DateTime, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     avatar = db.Column(db.String(64), default='dafulte.png')
 
     @property
@@ -64,7 +64,7 @@ class Follow(db.Model):
     __tablename__ = 'follows'
     follower_id = db.Column(db.Integer, primary_key=True)
     followed_id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
 
 
 class Topic(db.Model):
@@ -73,8 +73,9 @@ class Topic(db.Model):
     topic = db.Column(db.String(64), unique=True, index=True)
     info = db.Column(db.Text())
     img = db.Column(db.String(64))
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
     clink = db.Column(db.Integer, default=1)
+    author = db.Column(db.Integer, index=True)
 
     def ping(self):
         self.clink += 1
@@ -86,7 +87,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.Integer, index=True)
     tpoic = db.Column(db.Integer, index=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
     clink = db.Column(db.Integer, default=1)
     head = db.Column(db.String(64))
     body = db.Column(db.Text())

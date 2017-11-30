@@ -67,7 +67,7 @@ def user_index(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
-    return render_template('index.html', user=user,posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页')
+    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页')
 
 # 用户设置
 
@@ -138,11 +138,12 @@ def topics():
     topics = Topic.query.all()
     form = TopicForm()
     if form.validate_on_submit():
-        t = Topic(topic=form.topic_name.data, info=form.topic_info.data)
+        t = Topic(topic=form.topic_name.data,
+                  info=form.topic_info.data, author=current_user.id)
         db.session.add(t)
         img = form.topic_img.data
-        img.save('blog/static/topics/%s.jpg' % t.id)
-        t.img = '%s.jpg' % t.topic
+        img.save('blog/static/topics/%s.jpg' % form.topic_name.data)
+        t.img = '%s.jpg' % form.topic_name.data
         db.session.add(t)
         return redirect(url_for('main.topics', form=form, topics=topics, title='话题广场'))
     return render_template('topics/topics.html', form=form, topics=topics, title='话题广场')
@@ -154,7 +155,7 @@ def topic(topic):
     if not t:
         abort(404)
     t.ping()
-    return render_template('topics/topic.html', t=t, title=topic)
+    return render_template('topics/topic.html', t=t, title=topic, Post=Post, User=User)
 
 
 @main.route('/new-post', methods=['GET', 'POST'])
@@ -162,7 +163,8 @@ def topic(topic):
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        p = Post(author=current_user.id,tpoic=form.topic.data,head=form.head.data,body=form.body.data)
+        p = Post(author=current_user.id, tpoic=form.topic.data,
+                 head=form.head.data, body=form.body.data)
         db.session.add(p)
         return redirect(url_for('main.topics'))
     return render_template('topics/new_post.html', form=form, title='新帖子')

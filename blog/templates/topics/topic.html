@@ -11,6 +11,37 @@
 {% endblock %}
 
 {% block right %}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+		<ol class="breadcrumb" style="background-color: #337ab7;padding: 0px;margin-bottom: 0px;">
+		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
+		    <li><a href="" style="color: #fff;"><strong>{{ t.topic }}</strong></a></li>
+		</ol>
+    </div>
+    <div class="panel-body">
+        <div class="topic-img col-xs-2">
+        <img src="{{ url_for('static',filename='topics/'+t.img) }}" style="width: 80px;height: 80px;">
+        </div>
+        <div class="topic-body col-xs-5">
+        <p><strong>话题介绍:</strong></p>
+        <p>{{ t.info }}</p>
+        </div>
+        <div class="topic-info col-xs-5">
+        <p>话题创建者：{{ User.query.filter_by(id=t.author).first().username }}</p>
+        <p>话题创建时间: {{ moment(t.timestamp).format('LL') }}</p>
+        <button type="button" class="btn btn-default btn-xs" id="read">
+			<span class="glyphicon glyphicon-eye-open"></span> {{ t.clink }}次浏览
+		</button>
+		<button type="button" class="btn btn-default btn-xs" id="read">
+			<span class="glyphicon glyphicon-book"></span> {{ Post.query.filter_by(tpoic=t.id).count() }}篇文章
+		</button>
+		</div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
 <div class="panel panel-default">
 	<div class="panel-heading">
 	话题 <b>{{ t.topic }}</b> 下的帖子

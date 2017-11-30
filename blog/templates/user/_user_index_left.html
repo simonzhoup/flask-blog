@@ -9,6 +9,7 @@
 				{% if user.abortme %}
 				<p class="user-about">{{ user.abortme }}</p>
 				{% endif %}
+				<p class="user-logintime">{{ moment(user.last_seen).fromNow(refresh=True) }}
 			</div>
 		</div>
 		<div class="row" style="margin-top: 15px;">
