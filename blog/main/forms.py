@@ -45,7 +45,7 @@ class TopicForm(FlaskForm):
 
 class PostForm(FlaskForm):
     head = StringField('标题', validators=[Required(), Length(1, 64)])
-    body = TextAreaField('内容',validators=[Required()])
+    body = TextAreaField('内容', validators=[Required()])
     topic = SelectField('所属话题', coerce=int)
     submit = SubmitField('提交')
 
@@ -53,3 +53,8 @@ class PostForm(FlaskForm):
         super(PostForm, self).__init__(*args, **kwargs)
         self.topic.choices = [(t.id, t.topic)
                               for t in Topic.query.order_by(Topic.id).all()]
+
+
+class EditTopic(FlaskForm):
+    topic_info = TextAreaField('话题描述')
+    submit = SubmitField('提交')

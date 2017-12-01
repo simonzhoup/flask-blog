@@ -1,17 +1,16 @@
-<div class="panel panel-default" style="padding-bottom: 20px;">
-    <div class="panel-heading ">
-    <strong>{{ user.username }}</strong>的文章
+<div class="panel panel-default col-xs-12" style="padding-bottom: 20px;">
+    <div class="panel-heading">
+    	<strong>{{ user.username }}</strong>的文章
     </div>
 	{% if posts == [] %}
 	<div class="panel-body">
-	<div class="alert alert-info">这里还没有任何文章哟～</div>
+		<div class="alert alert-info">这里还没有任何文章哟～</div>
 	</div>
 	{% else %}
 	<ul class="list-group">
 		{% for p in posts %}
-		<div class="list-group-item col-xs-12">
-			<div class ="col-xs-9">
-				<h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3>
+		<li class="list-group-item col-xs-12">
+				<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3></a>
 				<p class="list-meta col-xs-12">
 					<a href="{{ url_for('main.topic',topic=Topic.query.filter_by(id=p.tpoic).first().topic) }}">
 					<button type="button" class="btn btn-success btn-xs">
@@ -25,8 +24,7 @@
 					<span class="glyphicon glyphicon-time"></span> {{ moment(p.timestamp).fromNow(refresh=True) }}
 					</button>
 				</p>
-			</div>
-		</div>
+		</li>
 		{% endfor %}		
 	</ul>
 	{% endif %}

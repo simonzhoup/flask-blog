@@ -95,3 +95,22 @@ class Post(db.Model):
     def ping(self):
         self.clink += 1
         db.session.add(self)
+
+
+class TopicFollows(db.Model):
+    __tablename__ = 'topicfollows'
+    user_id = db.Column(db.Integer, primary_key=True)
+    topic_id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+
+    def follow(user, topic):
+        f = TopicFollows(user_id=user, topic_id=topic)
+        db.session.add(f)
+
+    def unfollow(user, topic):
+        f = TopicFollows.query.filter_by(user_id=user, topic_id=topic).first()
+        if f:
+            db.session.delete(f)
+
+    def is_follow(user, topic):
+        return TopicFollows.query.filter_by(user_id=user, topic_id=topic).first()

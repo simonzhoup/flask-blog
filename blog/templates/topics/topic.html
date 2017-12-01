@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% if title %}
 {% block title %}
@@ -21,13 +22,15 @@
     <div class="panel-body">
         <div class="topic-img col-xs-2">
         <img src="{{ url_for('static',filename='topics/'+t.img) }}" style="width: 80px;height: 80px;">
+        <p><h4 class="text-center" style="padding-top: 10px;"><strong>{{ t.topic }}</strong></h4></p>
         </div>
         <div class="topic-body col-xs-5">
         <p><strong>话题介绍:</strong></p>
         <p>{{ t.info }}</p>
         </div>
         <div class="topic-info col-xs-5">
-        <p>话题创建者：{{ User.query.filter_by(id=t.author).first().username }}</p>
+        <p>话题创建者：
+        <a href="{{ url_for('main.user_index',id=t.author) }}">{{ User.query.filter_by(id=t.author).first().username }}</p></a>
         <p>话题创建时间: {{ moment(t.timestamp).format('LL') }}</p>
         <button type="button" class="btn btn-default btn-xs" id="read">
 			<span class="glyphicon glyphicon-eye-open"></span> {{ t.clink }}次浏览
@@ -35,14 +38,27 @@
 		<button type="button" class="btn btn-default btn-xs" id="read">
 			<span class="glyphicon glyphicon-book"></span> {{ Post.query.filter_by(tpoic=t.id).count() }}篇文章
 		</button>
-		</div>
+		<p style="padding-top: 10px;">
+		<a href="#edit-topic" data-toggle="modal">
+		<button type="button" class="btn btn-success btn-sm">编辑</button>
+		</a>
+		{% if not f %}
+		<a href="{{ url_for('main.follow_topic',topic=t.topic) }}">
+		<button type="button" class="btn btn-primary btn-sm">关注</button>
+		</a>
+		{% else %}
+		<a href="{{ url_for('main.unfollow_topic',topic=t.topic) }}">
+		<button type="button" class="btn btn-primary btn-sm">取消关注</button>
+		</a>
+		{% endif %}		
+		</div></p>
     </div>
     <div class="panel-footer">
 
     </div>
 </div>
 
-<div class="panel panel-default">
+<div class="panel panel-default col-xs-12">
 	<div class="panel-heading">
 	话题 <b>{{ t.topic }}</b> 下的帖子
 	</div>
@@ -55,7 +71,7 @@
 		{% for p in Post.query.filter_by(tpoic=t.id).all() %}
 		<div class="list-group-item col-xs-12">
 			<div class ="col-xs-9">
-				<h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3>
+				<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3></a>
 				<p class="list-meta col-xs-12">
 					<a href="{{ url_for('main.user_index',id=User.query.filter_by(id=t.author).first().id) }}">
 					<button type="button" class="btn btn-success btn-xs">
@@ -76,4 +92,45 @@
 		{% endfor %}		
 	</ul>
 </div>
+
+<div class="modal fade" id="edit-topic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">编辑话题描述</h4>
+            </div>
+            <div class="modal-body">
+            	{% if current_user.is_authenticated %}
+            	{{ wtf.quick_form(form) }}
+            	{% else %}
+            	请登录后进行操作
+            	{% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            	{% if current_user.is_authenticated %}
+                <button type="submit" class="btn btn-primary" onclick="load()">提交</button>
+                {% endif %}
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+function load(){
+    //下面两种方法效果是一样的
+    // document.getElementById("target").onclick();
+    document.getElementById("submit").click();
+}
+document.getElementById("submit").style.display="none"
+</script>
+<style type="text/css">
+#topic_info {
+	height: 180px;
+}
+</style>
 {% endblock %}

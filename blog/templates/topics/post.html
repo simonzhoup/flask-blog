@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% if title %}
+{% block title %}
+<title>围脖blog -- {{ title }}</title>
+{% endblock %}
+{% endif %}
+
+{% block left %}
+{% include '_user_left.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+		<ol class="breadcrumb" style="background-color: #337ab7;padding: 0px;margin-bottom: 0px;">
+		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
+		    <li><a href="{{ url_for('main.topic',topic=topic) }}" style="color: #fff;"><strong>{{ topic }}</strong></a></li>
+		    <li><a style="color: #fff;"><strong>帖子</strong></a></li>
+		</ol>
+    </div>
+    <ul class="list-group">
+	    <li class="list-group-item">
+	        <h2>{{ p.head }}</h2>
+			<a href="{{ url_for('main.topic',topic=topic) }}">
+			<button type="button" class="btn btn-success btn-xs">
+			<span class="glyphicon glyphicon-tags"></span>
+			 {{ topic }}
+			</button></a>
+			<a href="{{ url_for('main.user_index',id=author.id) }}">
+			<button type="button" class="btn btn-default btn-xs" id="read">
+			<span class="glyphicon glyphicon-user"></span>作者：{{ author.username }}
+			</button></a>
+			<button type="button" class="btn btn-default btn-xs" id="read">
+			<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
+			</button>
+			<button type="button" class="btn btn-default btn-xs" id="time">
+			<span class="glyphicon glyphicon-time"></span> {{ moment(p.timestamp).fromNow(refresh=True) }}
+			</button>
+	    </li>
+	    <li class="list-group-item">
+	        <p>{{ p.body }}</p>
+	    </li>
+    </ul>	
+    <div class="panel-footer">
+
+    </div>
+</div>
+{% endblock %}

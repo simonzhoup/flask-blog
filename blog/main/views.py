@@ -4,8 +4,8 @@ from flask import render_template, make_response, redirect, url_for, request, fl
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
-from ..models import User, Follow, Topic, Post
-from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm
+from ..models import User, Follow, Topic, Post, TopicFollows
+from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic
 from .. import db
 
 # 用户设置路由
@@ -60,6 +60,8 @@ def user_seting():
 def home():
     return render_template('home.html', user=current_user)
 
+# 用户主页
+
 
 @main.route('/user/<id>')
 def user_index(id):
@@ -95,6 +97,8 @@ def email_resp():
     resp.set_cookie('xx', 'seting3', max_age=60)
     return resp
 
+# 所有关注者界面
+
 
 @main.route('/user/follower-all/<id>')
 def user_follower_all(id):
@@ -103,6 +107,8 @@ def user_follower_all(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     return render_template('index.html', user=user, User=User, index='follower-all,index', all_follower=all_follower, c1=c1, c2=c2)
+
+# 所有关注的人界面
 
 
 @main.route('/user/followed-all/<id>')
@@ -113,6 +119,8 @@ def user_followed_all(id):
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     return render_template('index.html', user=user, User=User, index='followed-all,index', all_followed=all_followed, c1=c1, c2=c2)
 
+# 关注用户
+
 
 @main.route('/user/follow/<id>')
 @login_required
@@ -121,6 +129,8 @@ def user_follow(id):
     current_user.follow(user)
     flash('关注成功')
     return redirect(url_for('main.user_index', id=user.id))
+
+# 取消关注用户
 
 
 @main.route('/user/unfollow/<id>')
@@ -131,9 +141,10 @@ def user_unfollow(id):
     flash('已取消关注')
     return redirect(url_for('main.user_index', id=user.id))
 
+# 所有话题
+
 
 @main.route('/topics', methods=['GET', 'POST'])
-@login_required
 def topics():
     topics = Topic.query.all()
     form = TopicForm()
@@ -148,14 +159,27 @@ def topics():
         return redirect(url_for('main.topics', form=form, topics=topics, title='话题广场'))
     return render_template('topics/topics.html', form=form, topics=topics, title='话题广场')
 
+# 话题
 
-@main.route('/topics/<topic>')
+
+@main.route('/topics/<topic>', methods=['GET', 'POST'])
 def topic(topic):
+    form = EditTopic()
     t = Topic.query.filter_by(topic=topic).first()
     if not t:
         abort(404)
+    if form.validate_on_submit():
+        t.info = form.topic_info.data
+        db.session.add(t)
+        return redirect(url_for('main.topic', topic=t.topic))
     t.ping()
-    return render_template('topics/topic.html', t=t, title=topic, Post=Post, User=User)
+    form.topic_info.data = t.info
+    f = None
+    if current_user.is_authenticated:
+        f = TopicFollows.is_follow(current_user.id, t.id)
+    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, User=User, form=form)
+
+# 新帖子
 
 
 @main.route('/new-post', methods=['GET', 'POST'])
@@ -171,3 +195,30 @@ def new_post():
         db.session.add(p)
         return redirect(url_for('main.topics'))
     return render_template('topics/new_post.html', form=form, title='新帖子')
+
+# 帖子
+
+
+@main.route('/post/<id>')
+def post(id):
+    p = Post.query.get_or_404(id)
+    topic = Topic.query.filter_by(id=p.tpoic).first().topic
+    author = User.query.filter_by(id=p.author).first()
+    return render_template('topics/post.html', p=p, topic=topic, author=author)
+
+
+@main.route('/topic/follow/<topic>')
+@login_required
+def follow_topic(topic):
+    t = Topic.query.filter_by(topic=topic).first()
+    user = current_user
+    TopicFollows.follow(user.id, t.id)
+    return redirect(url_for('main.topic', topic=topic))
+
+
+@main.route('/topic/unfollow/<topic>')
+@login_required
+def unfollow_topic(topic):
+    t = Topic.query.filter_by(topic=topic).first()
+    TopicFollows.unfollow(current_user.id, t.id)
+    return redirect(url_for('main.topic', topic=topic))

@@ -37,14 +37,20 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">添加新话题</h4>
+                <h4 class="modal-title" id="myModalLabel">添加话题</h4>
             </div>
             <div class="modal-body">
+                {% if current_user.is_authenticated %}
             	{{ wtf.quick_form(form) }}
+                {% else %}
+                请登录后进行此操作
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="submit" class="btn btn-primary" onclick="load()">添加</button>
+                {% if current_user.is_authenticated %}
+                <button type="submit" class="btn btn-primary" onclick="load()">提交</button>
+                {% endif %}
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
