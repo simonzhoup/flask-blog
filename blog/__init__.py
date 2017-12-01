@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_moment import Moment
+from flask_pagedown import PageDown
 import pymysql
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 import qiniu.config
@@ -16,6 +17,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 moment = Moment()
+pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.user_login'
@@ -33,6 +35,7 @@ def create_blog(config_name):
     db.init_app(blog)
     login_manager.init_app(blog)
     moment.init_app(blog)
+    pagedown.init_app(blog)
 
     # 注册蓝本
     from .main import main as main_buleprint

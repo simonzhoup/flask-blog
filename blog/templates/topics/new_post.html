@@ -12,7 +12,7 @@
 	display: table;
 }
 #body {
-	height: 240px;
+	/*visibility: hidden;*/
 }
 </style>
 {% endblock %}
@@ -30,5 +30,25 @@
     <div class="panel-body">
     {{ wtf.quick_form(form) }}
     </div>
+    <div class="panel-footer" id="div1">
+	</div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="//unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+<script type="text/javascript">
+        var E = window.wangEditor
+        var editor = new E('#div1')
+        var $body = $('#body')
+        editor.customConfig.onchange = function (html) {
+            // 监控变化，同步更新到 textarea
+            $body.val(html)
+        }
+        editor.create()
+        // 初始化 textarea 的值
+        $body.val(editor.txt.html())
+</script>
+{{ pagedown.include_pagedown() }}
 {% endblock %}

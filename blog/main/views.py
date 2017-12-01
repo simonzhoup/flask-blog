@@ -194,7 +194,8 @@ def new_post():
                  head=form.head.data, body=form.body.data)
         db.session.add(p)
         return redirect(url_for('main.topics'))
-    return render_template('topics/new_post.html', form=form, title='新帖子')
+    topics = Topic.query.order_by(Topic.id).all()
+    return render_template('topics/new_post.html', form=form, title='新帖子', topics=topics)
 
 # 帖子
 

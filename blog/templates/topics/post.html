@@ -15,7 +15,7 @@
     <div class="panel-heading">
 		<ol class="breadcrumb" style="background-color: #337ab7;padding: 0px;margin-bottom: 0px;">
 		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
-		    <li><a href="{{ url_for('main.topic',topic=topic) }}" style="color: #fff;"><strong>{{ topic }}</strong></a></li>
+		    <li><a href="{{ url_for('main.topic',topic=topic) }}" style="color: #fff;">{{ topic }}</a></li>
 		    <li><a style="color: #fff;"><strong>帖子</strong></a></li>
 		</ol>
     </div>
@@ -39,7 +39,7 @@
 			</button>
 	    </li>
 	    <li class="list-group-item">
-	        <p>{{ p.body }}</p>
+	        <p>{{ p.body|safe }}</p>
 	    </li>
     </ul>	
     <div class="panel-footer">
