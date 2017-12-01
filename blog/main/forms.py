@@ -5,7 +5,6 @@ from wtforms.validators import Required, Length, Email, EqualTo, Regexp
 from ..models import User, Topic
 from flask_login import current_user
 from flask_uploads import UploadSet, IMAGES
-from flask_pagedown.fields import PageDownField
 
 
 images = UploadSet('images', IMAGES)

@@ -55,3 +55,6 @@ footer {
 	background-color: #5bc0de;
 	color: #fff;
 }
+.list-group-item {
+	padding-bottom: 20px;
+}

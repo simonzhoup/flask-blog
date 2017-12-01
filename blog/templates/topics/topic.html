@@ -68,7 +68,7 @@
 	</div>
 	{% endif %}
     <ul class="list-group">	
-		{% for p in Post.query.filter_by(tpoic=t.id).all() %}
+		{% for p in Post.query.filter_by(tpoic=t.id).all()[::-1] %}
 		<div class="list-group-item col-xs-12">
 			<div class ="col-xs-9">
 				<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3></a>

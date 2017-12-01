@@ -203,6 +203,7 @@ def new_post():
 @main.route('/post/<id>')
 def post(id):
     p = Post.query.get_or_404(id)
+    p.ping()
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
     author = User.query.filter_by(id=p.author).first()
     return render_template('topics/post.html', p=p, topic=topic, author=author)
