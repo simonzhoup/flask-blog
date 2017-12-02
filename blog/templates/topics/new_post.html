@@ -3,6 +3,8 @@
 
 {% block head %}
 {{ super() }}
+ <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
+
 <title>围脖blog -- 新帖子</title>
 <style type="text/css">
 #topic {
@@ -12,7 +14,7 @@
 	display: table;
 }
 #body {
-	/*visibility: hidden;*/
+	height: 300px;
 }
 </style>
 {% endblock %}
@@ -30,24 +32,26 @@
     <div class="panel-body">
     {{ wtf.quick_form(form) }}
     </div>
-    <div class="panel-footer" id="div1">
-	</div>
+	<!--     <div class="panel-footer" id="div1">
+		</div> -->
 </div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script type="text/javascript" src="//unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='dist/js/wangEditor.min.js') }}"></script>
 <script type="text/javascript">
-        var E = window.wangEditor
-        var editor = new E('#div1')
-        var $body = $('#body')
-        editor.customConfig.onchange = function (html) {
-            // 监控变化，同步更新到 textarea
-            $body.val(html)
-        }
-        editor.create()
-        // 初始化 textarea 的值
-        $body.val(editor.txt.html())
+    // var E = window.wangEditor
+    // var editor = new E('#div1')
+    // var $body = $('#body')
+    // editor.customConfig.onchange = function (html) {
+    //     // 监控变化，同步更新到 textarea
+    //     $body.val(html)
+    // }
+    // editor.create()
+    // // 初始化 textarea 的值
+    // $body.val(editor.txt.html())
+    var editor = new wangEditor('body');
+    editor.create();
 </script>
 {% endblock %}

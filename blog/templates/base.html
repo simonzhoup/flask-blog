@@ -6,11 +6,12 @@
     {% block title %}
     <title>围脖blog</title>
     {% endblock %}
-	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ url_for('static',filename='icon/home-icon.png') }}">
-    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static',filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
 </head>
 {% endblock %}
 
@@ -99,7 +100,7 @@
 </html>
 
 {% block scripts %}
-{{ moment.include_moment() }}
+<script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
 {{ moment.lang('zh-cn') }}
 {% endblock %}
 
