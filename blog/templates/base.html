@@ -1,3 +1,5 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
 <!DOCTYPE html>
 <html>
 {% block head %}
@@ -7,11 +9,12 @@
     <title>围脖blog</title>
     {% endblock %}
 	<link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+<!--     <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
+ -->    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ url_for('static',filename='icon/home-icon.png') }}">
     <script src="{{ url_for('static',filename='js/jquery-3.2.1.slim.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
 </head>
 {% endblock %}
 
@@ -53,12 +56,7 @@
                 {% endif %}
 
                 <div class="navbar-form navbar-right" role="search">
-                    <div class="form-group">
-                        <input onkeydown="if(event.keyCode==13){search();}" type="text" id="search" class="form-control" name="search" placeholder="输入关键词">
-                    </div>
-                    <a class="btn btn-default" id="search-btn">
-                        搜索
-                    </a>
+                    {{ wtf.quick_form(search) }}
                 </div>
             </div>
         </div><!--end nav container-->
@@ -75,7 +73,7 @@
         {% endfor %}
         <div class="row col-md-12">
         {% block inside_row %}
-            <div class="col-md-3" id="left">
+            <div class="col-md-3" id="left" style="width: 280px;height: 240px;">
                 {% block left %}{% endblock %}
             </div>
             <!--left: user info-->
@@ -100,7 +98,6 @@
 </html>
 
 {% block scripts %}
-<script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
 {{ moment.lang('zh-cn') }}
 {% endblock %}
 

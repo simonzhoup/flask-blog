@@ -1,17 +1,22 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
-{% if title %}
-{% block title %}
+{% block head %}
+{{ super() }}
 <title>围脖blog -- 文章</title>
+<style type="text/css">
+#body {
+	height: 120px;
+}
+</style>
 {% endblock %}
-{% endif %}
 
 {% block left %}
 {% include '_user_left.html' %}
 {% endblock %}
 
 {% block right %}
-<div class="panel panel-primary">
+<div class="panel panel-primary col-xs-12">
     <div class="panel-heading">
 		<ol class="breadcrumb" style="background-color: #337ab7;padding: 0px;margin-bottom: 0px;">
 		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
@@ -31,12 +36,25 @@
 			<button type="button" class="btn btn-default btn-xs" id="read">
 			<span class="glyphicon glyphicon-user"></span>作者：{{ author.username }}
 			</button></a>
-			<button type="button" class="btn btn-default btn-xs" id="read">
+			<button type="button" class="btn btn-default btn-xs" id="read" disabled>
 			<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
 			</button>
-			<button type="button" class="btn btn-default btn-xs" id="time">
-			<span class="glyphicon glyphicon-time"></span> {{ moment(p.timestamp).fromNow(refresh=True) }}
+			<button type="button" class="btn btn-default btn-xs" id="time" disabled>
+			<span class="glyphicon glyphicon-time"></span>
+			<script>
+			var weekday = moment('{{ p.timestamp }}').zone(+8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+			document.write(weekday);
+			</script>
 			</button>
+			{% if author.is_self(current_user) %}
+			<button type="button" class="btn btn-primary btn-xs" id="edit">
+			<span class="glyphicon glyphicon-edit"></span> 编辑
+			</button>
+			<a href="{{ url_for('main.delete_post',id=p.id) }}">
+			<button type="button" class="btn btn-danger btn-xs" id="delete">
+			<span class="glyphicon glyphicon-trash"></span> 删除
+			</button></a>
+			{% endif %}			
 	    </li>
 	    <li class="list-group-item">
 	        <p>{{ p.body|safe }}</p>
@@ -46,4 +64,22 @@
 
     </div>
 </div>
+
+<div class="panel panel-success col-xs-12">
+    <div class="panel-heading">
+    	文章评论
+    </div>
+    <ul class="list-group">	
+		<div class="list-group-item col-xs-12">
+			<div class="alert alert-info">这个话题下还没有发表过帖子～</div>		
+		</div>
+	</ul>
+</div>
+
+{% include '_comment.html' %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+
 {% endblock %}

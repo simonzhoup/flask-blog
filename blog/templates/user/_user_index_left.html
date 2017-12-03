@@ -13,15 +13,15 @@
 			</div>
 		</div>
 		<div class="row" style="margin-top: 15px;">
-			<ul class="nav nav-pills nav-justified">
-			<li>
-				<a href="{{ url_for('main.user_index',id=user.id) }}"><img src="{{ url_for('static',filename='icon/home-icon.png') }}"></a> 
+			<ul class="nav nav-pills" style="padding-left: 15px;">
+			<li col-xs-4>
+				<a href="{{ url_for('main.user_index',id=user.id) }}"><img src="{{ url_for('static',filename='icon/home-icon.png') }}" style="height: 40px;width: 40px;"></a> 
 			</li>
-			<li>
-				<a href="{{ url_for('main.user_seting') }}"><img src="{{ url_for('static',filename='icon/settings-3-icon.png') }}"></a> 
+			<li col-xs-4>
+				<a href="{{ url_for('main.user_seting') }}"><img src="{{ url_for('static',filename='icon/settings-3-icon.png') }}" style="height: 40px;width: 40px;"></a> 
 			</li>
-			<li>
-				<a href="{{ url_for('auth.user_logout') }}"><img src="{{ url_for('static',filename='icon/close-icon.png') }}"></a> 
+			<li col-xs-4>
+				<a href="{{ url_for('auth.user_logout') }}"><img src="{{ url_for('static',filename='icon/close-icon.png') }}" style="height: 40px;width: 40px;"></a> 
 			</li>
 			</ul>
 		</div>

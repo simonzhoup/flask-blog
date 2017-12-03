@@ -5,10 +5,33 @@ from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
 from ..models import User, Follow, Topic, Post, TopicFollows
-from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic
+from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm
 from .. import db
+from sqlalchemy import and_, or_
 
-# 用户设置路由
+
+# @main.route('/search/', methods=['GET', 'POST'])
+def Search(sss):
+    # posts = Post.query.filter(Post.body.like(xxx)).all()
+    # return render_template('search.html', posts=posts, search=SearchForm(),
+    # Topic=Topic)
+    return redirect(url_for('main.Searchs', xxx=sss))
+
+
+@main.route('/search/<xxx>', methods=['GET', 'POST'])
+def Searchs(xxx):
+    xxx = '%' + xxx + '%'
+    posts = Post.query.filter(
+        or_(Post.body.like(xxx), Post.head.like(xxx))).all()
+    return render_template('search.html', posts=posts, search=SearchForm(), Topic=Topic)
+
+
+@main.before_app_request
+def before_request():
+    search = SearchForm()
+    if search.validate_on_submit():
+        s = search.s.data
+        return Search(s)
 
 
 @main.route('/user/seting/', methods=['GET', 'POST'])
@@ -53,12 +76,16 @@ def user_seting():
         # return render_template('index.html', user=current_user, index=index,
         # form=form, title='头像设置', id=id)
 
-    return render_template('index.html', user=current_user, index=index, form=form, title='用户设置')
+    return render_template('index.html', user=current_user, index=index, form=form, title='用户设置', search=SearchForm())
 
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html', user=current_user)
+    # search = Search()
+    # if search:
+    # return render_template('search.html', posts=search, search=SearchForm(),
+    # Topic=Topic)
+    return render_template('home.html', user=current_user, search=SearchForm())
 
 # 用户主页
 
@@ -69,7 +96,7 @@ def user_index(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
-    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页')
+    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页', search=SearchForm())
 
 # 用户设置
 
@@ -106,7 +133,7 @@ def user_follower_all(id):
     all_follower = user.all_follower()
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    return render_template('index.html', user=user, User=User, index='follower-all,index', all_follower=all_follower, c1=c1, c2=c2)
+    return render_template('index.html', user=user, User=User, index='follower-all,index', all_follower=all_follower, c1=c1, c2=c2, search=SearchForm())
 
 # 所有关注的人界面
 
@@ -117,7 +144,7 @@ def user_followed_all(id):
     all_followed = user.all_follow()
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    return render_template('index.html', user=user, User=User, index='followed-all,index', all_followed=all_followed, c1=c1, c2=c2)
+    return render_template('index.html', user=user, User=User, index='followed-all,index', all_followed=all_followed, c1=c1, c2=c2, search=SearchForm())
 
 # 关注用户
 
@@ -157,7 +184,7 @@ def topics():
         t.img = '%s.jpg' % form.topic_name.data
         db.session.add(t)
         return redirect(url_for('main.topics', form=form, topics=topics, title='话题广场'))
-    return render_template('topics/topics.html', form=form, topics=topics, title='话题广场')
+    return render_template('topics/topics.html', form=form, topics=topics, title='话题广场', search=SearchForm())
 
 # 话题
 
@@ -177,7 +204,7 @@ def topic(topic):
     f = None
     if current_user.is_authenticated:
         f = TopicFollows.is_follow(current_user.id, t.id)
-    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, User=User, form=form)
+    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, User=User, form=form, search=SearchForm())
 
 # 新帖子
 
@@ -195,18 +222,33 @@ def new_post():
         db.session.add(p)
         return redirect(url_for('main.topics'))
     topics = Topic.query.order_by(Topic.id).all()
-    return render_template('topics/new_post.html', form=form, title='新帖子', topics=topics)
+    return render_template('topics/new_post.html', form=form, title='新帖子', topics=topics, search=SearchForm())
 
+
+@main.route('/delete-post/<id>')
+@login_required
+def delete_post(id):
+    '''删除帖子'''
+    p = Post.query.get_or_404(id)
+    user = User.query.filter_by(id=p.author).first()
+    if user.is_self(current_user):
+        db.session.delete(p)
+        flash('帖子已删除')
+        return redirect(url_for('main.topics'))
+    else:
+        flash('无法删除')
+        return redirect(url_for('main.topics'))
 # 帖子
 
 
 @main.route('/post/<id>')
 def post(id):
+    form = CommentForm()
     p = Post.query.get_or_404(id)
     p.ping()
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
     author = User.query.filter_by(id=p.author).first()
-    return render_template('topics/post.html', p=p, topic=topic, author=author)
+    return render_template('topics/post.html', p=p, topic=topic, author=author, form=form, search=SearchForm())
 
 
 @main.route('/topic/follow/<topic>')

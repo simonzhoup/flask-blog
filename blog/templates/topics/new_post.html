@@ -52,6 +52,23 @@
     // // 初始化 textarea 的值
     // $body.val(editor.txt.html())
     var editor = new wangEditor('body');
+
+     editor.config.menus = $.map(wangEditor.config.menus, function(item, key) {
+         if (item === 'source') {
+             return null;
+         }
+         if (item === 'location') {
+             return null;
+         }
+         if (item === 'video') {
+             return null;
+         }
+         if (item === 'fullscreen') {
+             return null;
+         }
+         return item;
+     });
+
     editor.create();
 </script>
 {% endblock %}

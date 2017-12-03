@@ -58,3 +58,13 @@ class PostForm(FlaskForm):
 class EditTopic(FlaskForm):
     topic_info = TextAreaField('话题描述')
     submit = SubmitField('提交')
+
+
+class CommentForm(FlaskForm):
+    body = TextAreaField('内容')
+    submit = SubmitField('发表')
+
+
+class SearchForm(FlaskForm):
+    s = StringField('', validators=[Length(1, 64)])
+    submit1 = SubmitField('搜索')

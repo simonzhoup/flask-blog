@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from . import auth
 from .forms import UserRegister, UserLogin
+from ..main.forms import SearchForm
 from ..models import User
 from .. import db
 from flask_login import login_user, login_required, logout_user
@@ -14,7 +15,7 @@ def user_register():
                     password=form.password.data)
         db.session.add(user)
         return redirect(url_for('main.home'))
-    return render_template('user/user_register.html', form=form)
+    return render_template('user/user_register.html', form=form, search=SearchForm())
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -28,7 +29,7 @@ def user_login():
             flash(u'登录成功')
             return redirect(url_for('main.home'))
         flash('Invalid username or password.')
-    return render_template('user/user_login.html', form=form)
+    return render_template('user/user_login.html', form=form, search=SearchForm())
 
 
 @auth.route('/logout')

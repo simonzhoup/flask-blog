@@ -12,7 +12,12 @@
 		  	{% for f in all_follower %}
 		    	<tr>
 		      		<td><a href="{{ url_for('main.user_index',id=f.follower_id) }}">{{ User.query.filter_by(id=f.follower_id).first().username }}</a></td>
-		      		<td>{{ f.timestamp }}</td>
+		      		<td>
+						<script>
+						var weekday = moment('{{ f.timestamp }}').zone(8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						document.write(weekday);
+						</script>		      			
+		      		</td>
 		    	</tr>
 		    {% endfor %}
 		    </tbody>
