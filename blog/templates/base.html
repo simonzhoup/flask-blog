@@ -65,12 +65,6 @@
     {% block content %}
     <div id="warp">
     <div class="container">
-        {% for message in get_flashed_messages() %}
-        <div class="alert alert-warning">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{ message }}
-        </div>
-        {% endfor %}
         <div class="row col-md-12">
         {% block inside_row %}
             <div class="col-md-3" id="left" style="width: 280px;height: 240px;">
@@ -78,6 +72,12 @@
             </div>
             <!--left: user info-->
             <div class="col-md-8" id="right">
+                {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div>
+                {% endfor %}            
                 {% block right %}{% endblock %}
             </div>
             <!--right: topics-->
@@ -99,5 +99,8 @@
 
 {% block scripts %}
 {{ moment.lang('zh-cn') }}
+<script type="text/javascript">
+document.getElementById("s").setAttribute("placeholder","输入关键字");
+</script>
 {% endblock %}
 

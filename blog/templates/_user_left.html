@@ -14,13 +14,13 @@
 		<div class="row" style="margin-top: 15px;">
 			<ul class="nav nav-pills" style="padding-left: 15px;">
 			<li col-xs-4>
-				<a href="{{ url_for('main.user_index',id=current_user.id) }}"><img src="{{ url_for('static',filename='icon/home-icon.png') }}" style="height: 40px;width: 40px;"></a> 
+				<a href="{{ url_for('main.user_index',id=current_user.id) }}" data-toggle="tooltip"  title="主页"><img src="{{ url_for('static',filename='icon/home-icon.png') }}" style="height: 40px;width: 40px;"></a> 
 			</li>
 			<li col-xs-4>
-				<a href="{{ url_for('main.user_seting') }}"><img src="{{ url_for('static',filename='icon/settings-3-icon.png') }}" style="height: 40px;width: 40px;"></a> 
+				<a href="{{ url_for('main.user_seting') }}" data-toggle="tooltip"  title="设置"><img src="{{ url_for('static',filename='icon/settings-3-icon.png') }}" style="height: 40px;width: 40px;"></a> 
 			</li>
 			<li col-xs-4>
-				<a href="{{ url_for('auth.user_logout') }}"><img src="{{ url_for('static',filename='icon/close-icon.png') }}" style="height: 40px;width: 40px;"></a> 
+				<a href="{{ url_for('auth.user_logout') }}" data-toggle="tooltip"  title="登出"><img src="{{ url_for('static',filename='icon/close-icon.png') }}" style="height: 40px;width: 40px;"></a> 
 			</li>
 			</ul>
 		</div>
