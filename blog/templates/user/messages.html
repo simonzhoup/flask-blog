@@ -20,11 +20,9 @@
 		<div class="alert alert-info col-xs-6 col-xs-offset-3" style="margin-top: 10px;">没有消息</div>
 		{% endif %}
 		{% for s in messages %}
-		{% if s.read %}
-		<div class="alert alert-info">没有消息</div>
-		{% else %}
+		{% if not s.read %}
 		<li class="list-group-item col-xs-12">
-			<p><a href="{{ url_for('main.user_index',id=s.author) }}"><strong>{{ User.query.filter_by(id=s.author).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a>中提到了你</p>
+			<p><a href="{{ url_for('main.user_index',id=s.author) }}"><strong>{{ User.query.filter_by(id=s.author).first().username }}</strong></a> 评论了您的文章 <a href="{{ url_for('main.read_message',id=s.id) }}"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a></p>
 			<button type="button" class="btn btn-default btn-xs" id="read">
 			<span class="glyphicon glyphicon-eye-open"></span> {{ s.timestamp }}
 			</button>
@@ -46,14 +44,12 @@
 		{% for s in messages %}
 		{% if s.read %}
 		<li class="list-group-item col-xs-12">
-			<p><a href="{{ url_for('main.user_index',id=s.author) }}"><strong>{{ User.query.filter_by(id=s.author).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a>中提到了你</p>
+			<p><a href="{{ url_for('main.user_index',id=s.author) }}"><strong>{{ User.query.filter_by(id=s.author).first().username }}</strong></a> 评论了您的文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a></p>
 			<button type="button" class="btn btn-default btn-xs" id="read">
 			<span class="glyphicon glyphicon-eye-open"></span> {{ s.timestamp }}
 			</button>
 			</p>
 		</li>
-		{% else %}
-		<div class="alert alert-info">没有消息</div>
 		{% endif %}
 		{% endfor %}		
 	</ul>

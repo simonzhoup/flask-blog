@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     avatar = db.Column(db.String(64), default='dafulte.png')
+    noread_messages = db.Column(db.Integer, index=True, default=0)
 
     @property
     def password(self):
@@ -126,6 +127,7 @@ class Comments(db.Model):
     post_author_id = db.Column(db.Integer, index=True)
     comment_id = db.Column(db.Integer, index=True, nullable=True)
     body = db.Column(db.Text())
+    body_html = db.Column(db.Text())
     read = db.Column(db.Boolean(), default=False)
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
 
@@ -133,7 +135,7 @@ class Comments(db.Model):
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
-        target.body = bleach.linkify(bleach.clean(
+        target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
 db.event.listen(Comments.body, 'set', Comments.on_changed_body)

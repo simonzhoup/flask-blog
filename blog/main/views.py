@@ -1,6 +1,6 @@
 # coding = utf-8
 # 视图
-from flask import render_template, make_response, redirect, url_for, request, flash, abort
+from flask import render_template, make_response, redirect, url_for, request, flash, abort, g
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
@@ -248,13 +248,17 @@ def post(id):
     p = Post.query.get_or_404(id)
     if form.validate_on_submit():
         comment = Comments(author=current_user.id,
-                           post_id=p.id, body=form.body.data)
+                           post_id=p.id, body=form.body.data, post_author_id=p.author)
+        # notread = User.query.filter_by(id=current_user.id).first()
+        current_user.noread_messages += 1
+        db.session.add(current_user)
         db.session.add(comment)
         return redirect(url_for('main.post', id=p.id))
     p.ping()
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
     author = User.query.filter_by(id=p.author).first()
     comments = Comments.query.filter_by(post_id=p.id).all()
+
     return render_template('topics/post.html', p=p, topic=topic, author=author, form=form, search=SearchForm(), comments=comments, User=User)
 
 
@@ -279,4 +283,19 @@ def unfollow_topic(topic):
 @login_required
 def messages():
     messages = Comments.query.filter_by(post_author_id=current_user.id).all()
-    return render_template('user/messages.html', messages=messages, search=SearchForm(), User=User, Post=Post)
+    # for m in messages:
+    #     m.read = True
+    #     db.session.add(m)
+    return render_template('user/messages.html', messages=messages, search=SearchForm(), User=User, Post=Post, db=db, Comments=Comments)
+
+
+@main.route('/user/messages/read/<id>')
+@login_required
+def read_message(id):
+    m = Comments.query.filter_by(id=id).first()
+    if not m.read:
+        current_user.noread_messages -= 1
+        db.session.add(current_user)
+        m.read = True
+        db.session.add(m)
+    return redirect(url_for('main.post', id=m.post_id))
