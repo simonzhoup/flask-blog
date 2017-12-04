@@ -4,26 +4,26 @@ from flask import render_template, make_response, redirect, url_for, request, fl
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
-from ..models import User, Follow, Topic, Post, TopicFollows
+from ..models import User, Follow, Topic, Post, TopicFollows, Comments
 from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm
 from .. import db
 from sqlalchemy import and_, or_
 
 
 # @main.route('/search/', methods=['GET', 'POST'])
-def Search(sss):
-    # posts = Post.query.filter(Post.body.like(xxx)).all()
-    # return render_template('search.html', posts=posts, search=SearchForm(),
-    # Topic=Topic)
-    return redirect(url_for('main.Searchs', xxx=sss))
+# def Search(sss):
+#     # posts = Post.query.filter(Post.body.like(sss)).all()
+#     # return render_template('search.html', posts=posts, search=SearchForm(),
+#     # Topic=Topic)
+#     return redirect(url_for('main.Searchs', xxx=sss))
 
 
 @main.route('/search/<xxx>', methods=['GET', 'POST'])
 def Searchs(xxx):
-    xxx = '%' + xxx + '%'
+    sss = '%' + xxx + '%'
     posts = Post.query.filter(
-        or_(Post.body.like(xxx), Post.head.like(xxx))).all()
-    return render_template('search.html', posts=posts, search=SearchForm(), Topic=Topic)
+        or_(Post.body.like(sss), Post.head.like(sss))).all()
+    return render_template('search.html', posts=posts, search=SearchForm(), Topic=Topic, User=User)
 
 
 @main.before_app_request
@@ -31,7 +31,8 @@ def before_request():
     search = SearchForm()
     if search.validate_on_submit():
         s = search.s.data
-        return Search(s)
+        # return Search(s)
+        return redirect(url_for('main.Searchs', xxx=s))
 
 
 @main.route('/user/seting/', methods=['GET', 'POST'])
@@ -96,7 +97,7 @@ def user_index(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
-    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页', search=SearchForm())
+    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页', search=SearchForm(), Comments=Comments)
 
 # 用户设置
 
@@ -204,7 +205,7 @@ def topic(topic):
     f = None
     if current_user.is_authenticated:
         f = TopicFollows.is_follow(current_user.id, t.id)
-    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, User=User, form=form, search=SearchForm())
+    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, User=User, form=form, search=SearchForm(), Comments=Comments)
 
 # 新帖子
 
@@ -241,14 +242,20 @@ def delete_post(id):
 # 帖子
 
 
-@main.route('/post/<id>')
+@main.route('/post/<id>', methods=['GET', 'POST'])
 def post(id):
     form = CommentForm()
     p = Post.query.get_or_404(id)
+    if form.validate_on_submit():
+        comment = Comments(author=current_user.id,
+                           post_id=p.id, body=form.body.data)
+        db.session.add(comment)
+        return redirect(url_for('main.post', id=p.id))
     p.ping()
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
     author = User.query.filter_by(id=p.author).first()
-    return render_template('topics/post.html', p=p, topic=topic, author=author, form=form, search=SearchForm())
+    comments = Comments.query.filter_by(post_id=p.id).all()
+    return render_template('topics/post.html', p=p, topic=topic, author=author, form=form, search=SearchForm(), comments=comments, User=User)
 
 
 @main.route('/topic/follow/<topic>')

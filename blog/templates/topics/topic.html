@@ -79,19 +79,22 @@
 				<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3></a>
 				<p class="list-meta col-xs-12">
 					<a href="{{ url_for('main.user_index',id=User.query.filter_by(id=t.author).first().id) }}">
-					<button type="button" class="btn btn-success btn-xs">
+					<button type="button" class="btn btn-info btn-xs">
 					<span class="glyphicon glyphicon-user"></span>
 					作者：{{ User.query.filter_by(id=t.author).first().username }}
 					</button></a>
-					<button type="button" class="btn btn-default btn-xs" id="read">
+					<button type="button" class="btn btn-default btn-xs" id="read" disabled>
 					<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
 					</button>
-					<button type="button" class="btn btn-default btn-xs" id="time">
+					<button type="button" class="btn btn-default btn-xs" id="time" disabled>
 					<span class="glyphicon glyphicon-time"></span>
 						<script>
 						var weekday = moment('{{ p.timestamp }}').zone(8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
 						document.write(weekday);
 						</script>				
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="comments" disabled>
+					<span class="glyphicon glyphicon-comment"></span> {{ Comments.query.filter_by(post_id=p.id).count() }}条评论
 					</button>
 				</p>
 			</div>

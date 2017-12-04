@@ -1,8 +1,15 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
 <div class="panel panel-info col-xs-12">
     <div class="panel-heading">
     	发表评论
     </div>
     <div class="panel-body">
-    {{ wtf.quick_form(form) }}
+	    {% if current_user.is_authenticated %}
+	    {{ wtf.quick_form(form) }}
+	    {% else %}
+		<div class="alert alert-info">你还没有登录</div>	
+		{% endif %}
     </div>
+
 </div>

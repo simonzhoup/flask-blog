@@ -17,15 +17,18 @@
 					<span class="glyphicon glyphicon-tags"></span>
 					 {{ Topic.query.filter_by(id=p.tpoic).first().topic }}
 					</button></a>
-					<button type="button" class="btn btn-default btn-xs" id="read">
+					<button type="button" class="btn btn-default btn-xs" id="read" disabled>
 					<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
 					</button>
-					<button type="button" class="btn btn-default btn-xs" id="time">
+					<button type="button" class="btn btn-default btn-xs" id="time" disabled>
 					<span class="glyphicon glyphicon-time"></span>
 						<script>
 						var weekday = moment('{{ p.timestamp }}').zone(8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
 						document.write(weekday);
 						</script>					
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="comments" disabled>
+					<span class="glyphicon glyphicon-comment"></span> {{ Comments.query.filter_by(post_id=p.id).count() }}条评论
 					</button>
 				</p>
 		</li>

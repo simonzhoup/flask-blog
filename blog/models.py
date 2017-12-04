@@ -114,3 +114,12 @@ class TopicFollows(db.Model):
 
     def is_follow(user, topic):
         return TopicFollows.query.filter_by(user_id=user, topic_id=topic).first()
+
+
+class Comments(db.Model):
+    __tablename__ = 'comment'
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.Integer, index=True)
+    post_id = db.Column(db.Integer, index=True)
+    body = db.Column(db.Text())
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)

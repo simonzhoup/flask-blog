@@ -25,6 +25,11 @@
 		<li class="list-group-item col-xs-12">
 				<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3></a>
 				<p class="list-meta col-xs-12">
+					<a href="{{ url_for('main.user_index',id=User.query.filter_by(id=p.author).first().id) }}">
+					<button type="button" class="btn btn-info btn-xs">
+					<span class="glyphicon glyphicon-user"></span>
+					作者：{{ User.query.filter_by(id=p.author).first().username }}
+					</button></a>
 					<a href="{{ url_for('main.topic',topic=Topic.query.filter_by(id=p.tpoic).first().topic) }}">
 					<button type="button" class="btn btn-success btn-xs">
 					<span class="glyphicon glyphicon-tags"></span>
