@@ -2,6 +2,8 @@ from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
 from datetime import datetime
+from markdown import markdown
+import bleach
 
 
 @login_manager.user_loader
@@ -120,6 +122,23 @@ class Comments(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.Integer, index=True)
-    post_id = db.Column(db.Integer, index=True)
+    post_id = db.Column(db.Integer, index=True, nullable=True)
+    post_author_id = db.Column(db.Integer, index=True)
+    comment_id = db.Column(db.Integer, index=True, nullable=True)
     body = db.Column(db.Text())
+    read = db.Column(db.Boolean(), default=False)
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
+        target.body = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+db.event.listen(Comments.body, 'set', Comments.on_changed_body)
+
+# class CComments(db.Model):
+#     __tablename__ = 'ccomments'
+#     id = db.Column(db.Integer,primary_key=True)
+#     author = db.Column(db.Integer,index=True)

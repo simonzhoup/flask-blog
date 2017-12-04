@@ -273,3 +273,10 @@ def unfollow_topic(topic):
     t = Topic.query.filter_by(topic=topic).first()
     TopicFollows.unfollow(current_user.id, t.id)
     return redirect(url_for('main.topic', topic=topic))
+
+
+@main.route('/user/messages')
+@login_required
+def messages():
+    messages = Comments.query.filter_by(post_author_id=current_user.id).all()
+    return render_template('user/messages.html', messages=messages, search=SearchForm(), User=User, Post=Post)
