@@ -33,6 +33,10 @@ def before_request():
         s = search.s.data
         # return Search(s)
         return redirect(url_for('main.Searchs', xxx=s))
+    elif current_user.is_authenticated:
+        current_user.noread_messages = Comments.query.filter_by(
+            post_author_id=current_user.id).filter_by(read=False).count()
+        db.session.add(current_user)
 
 
 @main.route('/user/seting/', methods=['GET', 'POST'])
@@ -97,7 +101,7 @@ def user_index(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
-    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, title=user.username + '的主页', search=SearchForm(), Comments=Comments)
+    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, search=SearchForm(), Comments=Comments)
 
 # 用户设置
 
@@ -184,8 +188,8 @@ def topics():
         img.save('blog/static/topics/%s.jpg' % form.topic_name.data)
         t.img = '%s.jpg' % form.topic_name.data
         db.session.add(t)
-        return redirect(url_for('main.topics', form=form, topics=topics, title='话题广场'))
-    return render_template('topics/topics.html', form=form, topics=topics, title='话题广场', search=SearchForm())
+        return redirect(url_for('main.topics', form=form, topics=topics))
+    return render_template('topics/topics.html', form=form, topics=topics, search=SearchForm(), Post=Post)
 
 # 话题
 
@@ -221,7 +225,9 @@ def new_post():
         p = Post(author=current_user.id, tpoic=form.topic.data,
                  head=form.head.data, body=form.body.data)
         db.session.add(p)
-        return redirect(url_for('main.topics'))
+        db.session.commit()
+        # p = Post.query.order_by(Post.id).first()[::-1]
+        return redirect(url_for('main.post', id=p.id))
     topics = Topic.query.order_by(Topic.id).all()
     return render_template('topics/new_post.html', form=form, title='新帖子', topics=topics, search=SearchForm())
 
@@ -231,14 +237,19 @@ def new_post():
 def delete_post(id):
     '''删除帖子'''
     p = Post.query.get_or_404(id)
+    topic = Topic.query.filter_by(id=p.tpoic).first().topic
     user = User.query.filter_by(id=p.author).first()
     if user.is_self(current_user):
         db.session.delete(p)
+        cs = Comments.query.filter_by(post_id=p.id).all()
+        for c in cs:
+            db.session.delete(c)
+        db.session.commit()
         flash('帖子已删除')
-        return redirect(url_for('main.topics'))
+        return redirect(url_for('main.topic', topic=topic))
     else:
         flash('无法删除')
-        return redirect(url_for('main.topics'))
+        return redirect(url_for('main.topic', topic=topic))
 # 帖子
 
 
@@ -250,8 +261,7 @@ def post(id):
         comment = Comments(author=current_user.id,
                            post_id=p.id, body=form.body.data, post_author_id=p.author)
         # notread = User.query.filter_by(id=current_user.id).first()
-        current_user.noread_messages += 1
-        db.session.add(current_user)
+        user = User.query.filter_by(id=p.author).first()
         db.session.add(comment)
         return redirect(url_for('main.post', id=p.id))
     p.ping()
@@ -282,7 +292,8 @@ def unfollow_topic(topic):
 @main.route('/user/messages')
 @login_required
 def messages():
-    messages = Comments.query.filter_by(post_author_id=current_user.id).all()
+    messages = Comments.query.filter_by(
+        post_author_id=current_user.id).all()[::-1]
     # for m in messages:
     #     m.read = True
     #     db.session.add(m)
@@ -294,8 +305,6 @@ def messages():
 def read_message(id):
     m = Comments.query.filter_by(id=id).first()
     if not m.read:
-        current_user.noread_messages -= 1
-        db.session.add(current_user)
         m.read = True
         db.session.add(m)
     return redirect(url_for('main.post', id=m.post_id))

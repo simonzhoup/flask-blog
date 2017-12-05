@@ -11,7 +11,7 @@
 	<link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
 <!--     <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
  -->    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static',filename='icon/home-icon.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static',filename='icon/shortcut.ico') }}">
     <script src="{{ url_for('static',filename='js/jquery-3.2.1.slim.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
@@ -90,17 +90,34 @@
 
     <footer id="footer">
         <div class="container clearfix">
-        <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
-                    <p class="muted credit pull-right"> copyright by simonzhoup@gmail.com
-            </p>
+        <ol class="col-xs-4 breadcrumb" style="background-color: #fff;padding-top: 0px;margin-bottom: 0px;">
+        <li><a href="mailto:simonzhoup@gmail.com" style="color:#222"><span class="glyphicon glyphicon-envelope"></span></a></li>
+        <li><a href="#" style="color:#222"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModal"></span></a></li>
+        <li><a href="https://github.com/simonzhoup"><img src="{{ url_for('static',filename='icon/github.ico') }}" height="16" width="16"></a></li>
+        </ol>
+        <p class="muted credit pull-right"> copyright by simonzhoup@gmail.com</p>
         </div>
     </footer>
-
+    
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+            </div> -->
+            <div class="modal-body" style="padding: 0px;">
+                <div class="col-xs-8 col-xs-offset-2">
+                <img src="{{ url_for('static',filename='icon/wechat.jpg') }}">
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+    </div>
 </body>
 </html>
 
 {% block scripts %}
-{{ moment.lang('zh-cn') }}
 <script type="text/javascript">
 document.getElementById("s").setAttribute("placeholder","输入关键字");
 </script>

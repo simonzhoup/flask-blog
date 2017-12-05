@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% block title %}
+<title>{{ p.head }} -- 围脖blog</title>
+{% endblock %}
+
 {% block head %}
 {{ super() }}
 <title>围脖blog -- 文章</title>
@@ -42,7 +46,7 @@
 			<button type="button" class="btn btn-default btn-xs" id="time" disabled>
 			<span class="glyphicon glyphicon-time"></span>
 			<script>
-			var weekday = moment('{{ p.timestamp }}').zone(+8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+			var weekday = moment('{{ p.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
 			document.write(weekday);
 			</script>
 			</button>
@@ -50,7 +54,7 @@
 			<button type="button" class="btn btn-primary btn-xs" id="edit">
 			<span class="glyphicon glyphicon-edit"></span> 编辑
 			</button>
-			<a href="{{ url_for('main.delete_post',id=p.id) }}">
+			<a href="{{ url_for('main.delete_post',id=p.id) }}" onclick="return confirm('请确认删除');">
 			<button type="button" class="btn btn-danger btn-xs" id="delete">
 			<span class="glyphicon glyphicon-trash"></span> 删除
 			</button></a>
@@ -65,7 +69,7 @@
     </div>
 </div>
 
-<div class="panel panel-success col-xs-12">
+<div class="panel panel-success col-xs-12" id="comment">
     <div class="panel-heading">
     	文章评论
     </div>
@@ -74,7 +78,7 @@
 		<div class="alert alert-info">这篇文章暂时没有评论</div>	
 	</div>
 	{% endif %}
-    <ul class="list-group" id="comment">	
+    <ul class="list-group">	
     	{% for c in comments %}
 		<div class="list-group-item col-sm-12">	
 			<div class="col-sm-1">
@@ -84,7 +88,7 @@
 				<a href="{{ url_for('main.user_index',id=c.author) }}">{{ User.query.filter_by(id=c.author).first().username }}</a>
 				<p class="text-muted">
 					<script>
-					var weekday = moment('{{ c.timestamp }}').zone(+8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+					var weekday = moment('{{ c.timestamp }}').locale('zh-cn').fromNow(); 
 					document.write(weekday);
 					</script>
 				</p>

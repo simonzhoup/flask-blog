@@ -20,8 +20,8 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     abortme = db.Column(db.Text())
-    member_since = db.Column(db.DateTime, default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    member_since = db.Column(db.DateTime, default=datetime.now)
+    last_seen = db.Column(db.DateTime, default=datetime.now)
     avatar = db.Column(db.String(64), default='dafulte.png')
     noread_messages = db.Column(db.Integer, index=True, default=0)
 
@@ -37,7 +37,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def ping(self):
-        self.last_seen = datetime.utcnow()
+        self.last_seen = datetime.now()
         db.session.add(self)
 
     def is_self(self, current_user):
@@ -62,12 +62,16 @@ class User(UserMixin, db.Model):
     def is_follow(self, user):
         return Follow.query.filter_by(follower_id=self.id, followed_id=user.id).first()
 
+    def read_message(self):
+        self.noread_messages -= 1
+        db.session.add(self)
+
 
 class Follow(db.Model):
     __tablename__ = 'follows'
     follower_id = db.Column(db.Integer, primary_key=True)
     followed_id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
 
 
 class Topic(db.Model):
@@ -76,7 +80,7 @@ class Topic(db.Model):
     topic = db.Column(db.String(64), unique=True, index=True)
     info = db.Column(db.Text())
     img = db.Column(db.String(64))
-    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
     clink = db.Column(db.Integer, default=1)
     author = db.Column(db.Integer, index=True)
 
@@ -90,7 +94,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.Integer, index=True)
     tpoic = db.Column(db.Integer, index=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
     clink = db.Column(db.Integer, default=1)
     head = db.Column(db.String(64))
     body = db.Column(db.Text())
@@ -104,7 +108,7 @@ class TopicFollows(db.Model):
     __tablename__ = 'topicfollows'
     user_id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
 
     def follow(user, topic):
         f = TopicFollows(user_id=user, topic_id=topic)
@@ -129,7 +133,7 @@ class Comments(db.Model):
     body = db.Column(db.Text())
     body_html = db.Column(db.Text())
     read = db.Column(db.Boolean(), default=False)
-    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -137,6 +141,11 @@ class Comments(db.Model):
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+    def read_comment(self):
+        self.read = True
+        db.session.add(self)
+
 
 db.event.listen(Comments.body, 'set', Comments.on_changed_body)
 
