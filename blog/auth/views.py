@@ -14,7 +14,10 @@ def user_register():
         user = User(email=form.email.data, username=form.username.data,
                     password=form.password.data)
         db.session.add(user)
-        return redirect(url_for('main.home'))
+        db.session.commit()
+        user.admin()
+        flash('账号注册成功，现在您可以登录了')
+        return redirect(url_for('main.user_login'))
     return render_template('user/user_register.html', form=form, search=SearchForm())
 
 
@@ -25,7 +28,6 @@ def user_login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.verify_password(form.password.data):
             login_user(user)
-            user.ping()
             flash(u'登录成功')
             return redirect(url_for('main.home'))
         flash('Invalid username or password.')

@@ -24,6 +24,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.now)
     avatar = db.Column(db.String(64), default='dafulte.png')
     noread_messages = db.Column(db.Integer, index=True, default=0)
+    admin = db.Column(db.Boolean(), default=False)
 
     @property
     def password(self):
@@ -39,6 +40,11 @@ class User(UserMixin, db.Model):
     def ping(self):
         self.last_seen = datetime.now()
         db.session.add(self)
+
+    def admin(self):
+        if User.query.count() == 1:
+            self.admin = True
+            db.session.add(self)
 
     def is_self(self, current_user):
         return current_user.is_authenticated and self.id == current_user.id
@@ -62,9 +68,9 @@ class User(UserMixin, db.Model):
     def is_follow(self, user):
         return Follow.query.filter_by(follower_id=self.id, followed_id=user.id).first()
 
-    def read_message(self):
-        self.noread_messages -= 1
-        db.session.add(self)
+    # def read_message(self):
+    #     self.noread_messages -= 1
+    #     db.session.add(self)
 
 
 class Follow(db.Model):
@@ -149,7 +155,75 @@ class Comments(db.Model):
 
 db.event.listen(Comments.body, 'set', Comments.on_changed_body)
 
-# class CComments(db.Model):
-#     __tablename__ = 'ccomments'
-#     id = db.Column(db.Integer,primary_key=True)
-#     author = db.Column(db.Integer,index=True)
+
+class Answer(db.Model):
+    """database for QA"""
+    __tablename__ = 'answers'
+    id = db.Column(db.Integer, primary_key=True)
+    q_id = db.Column(db.Integer, index=True)
+    a_id = db.Column(db.Integer, index=True)
+    read = db.Column(db.Boolean(), default=False)
+    body = db.Column(db.Text())
+    body_html = db.Column(db.Text())
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+    # def is_read(self):
+    #     self.read = True
+    #     db.session.add(self)
+
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.Integer, index=True)
+    clink = db.Column(db.Integer, default=0)
+    title = db.Column(db.Text())
+    body = db.Column(db.Text())
+    body_html = db.Column(db.Text())
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+    def read(self):
+        self.read += 1
+        db.session.add(self)
+
+
+class Messages(db.Model):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    the_id = db.Column(db.Integer, index=True)
+    from_id = db.Column(db.Integer, index=True)
+    post_id = db.Column(db.Integer, index=True, nullable=True)
+    comment_id = db.Column(db.Integer, index=True, nullable=True)
+    read = db.Column(db.Boolean(), default=False)
+
+    def read(self):
+        self.read = True
+        db.session.add(self)
+
+    def read_post_all(id):
+        ms = Messages.query.filter_by(the_id=id).filter_by(
+            post_id != None).filter_by(read=False).all()
+        for m in ms:
+            m.read = True
+            db.session.add(m)
+
+    def read_post_all(id):
+        ms = Messages.query.filter_by(the_id=id).filter_by(
+            comment_id != None).filter_by(read=False).all()
+        for m in ms:
+            m.read = True
+            db.session.add(m)

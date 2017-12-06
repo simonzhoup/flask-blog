@@ -34,6 +34,7 @@ def before_request():
         # return Search(s)
         return redirect(url_for('main.Searchs', xxx=s))
     elif current_user.is_authenticated:
+        current_user.ping()
         current_user.noread_messages = Comments.query.filter_by(
             post_author_id=current_user.id).filter_by(read=False).count()
         db.session.add(current_user)
@@ -263,6 +264,7 @@ def post(id):
         # notread = User.query.filter_by(id=current_user.id).first()
         user = User.query.filter_by(id=p.author).first()
         db.session.add(comment)
+
         return redirect(url_for('main.post', id=p.id))
     p.ping()
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
