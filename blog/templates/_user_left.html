@@ -3,7 +3,7 @@
 	<div class="panel-body">
 		<div class="row">
 			<div class="col-xs-5">
-				<img src="{{ url_for('static',filename='user/avatar/'+current_user.avatar) }}" style="width: 80px;height: 80px;"></div>
+				<img src="{{ url_for('static',filename='user/avatar/'+current_user.avatar) }}" class="img-circle" style="width: 80px;height: 80px;"></div>
 			<div class="col-xs-7">
 				<p class="user-name">{{ current_user.username }}</p>
 				{% if current_user.abortme %}

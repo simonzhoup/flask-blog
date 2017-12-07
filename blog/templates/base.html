@@ -16,7 +16,6 @@
     <script src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
-    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <script type="text/javascript">
         $(function() {
             $(window).scroll(function() {
@@ -35,14 +34,16 @@
             position: fixed;
             left: 0px;
             top: 0px;
-            z-index: -1;
+            z-index: 0;
         }
     </style>
 </head>
 {% endblock %}
 
-<body id="particles-js">
-    <nav class="navbar navbar-default navbar-fixed-top col-md-12">
+<body>
+    <div id="particles-js">
+    </div>
+    <nav class="navbar navbar-inverse navbar-fixed-top col-md-12">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle"

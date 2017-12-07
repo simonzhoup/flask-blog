@@ -8,14 +8,11 @@
 #submit {
     background-color: transparent;
     color: #fff;
+    font-size: 20px;
 }
-.form-group {
-    color: #000;
-}
-.jumbotron {
-    margin-bottom: 0px;
-/*    background-size: cover;
-    background-image: url("{{ url_for('static', filename='back/background-image-html.jpg') }}")*/;
+.control-label {
+    color: #fff;
+    font-size: 20px;
 }
 </style>
 {% endblock %}
@@ -27,13 +24,8 @@
         {{ message }}
     </div>
     {% endfor %}
-
-	<!-- <div class="register-form col-md-6 col-md-offset-3">
-		<h1 class="text-center" style="margin-bottom:1em">登录 </h1>
-		{{ wtf.quick_form(form) }}
-	</div> -->
         <div class="register-form col-lg-6 col-lg-offset-3">
-            <h1 class="text-center" style="color: #fff;">登录 </h1>
+            <h1 class="text-center" style="color: #fff;font-size: 80px;">登录 </h1>
             {{ wtf.quick_form(form) }}
         </div>           
 {% endblock %}
