@@ -4,11 +4,11 @@ from flask import render_template, make_response, redirect, url_for, request, fl
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
-from ..models import User, Follow, Topic, Post, TopicFollows, Comments
+from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages
 from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm
 from .. import db
 from sqlalchemy import and_, or_
-
+import re
 
 # @main.route('/search/', methods=['GET', 'POST'])
 # def Search(sss):
@@ -35,8 +35,9 @@ def before_request():
         return redirect(url_for('main.Searchs', xxx=s))
     elif current_user.is_authenticated:
         current_user.ping()
-        current_user.noread_messages = Comments.query.filter_by(
-            post_author_id=current_user.id).filter_by(read=False).count()
+        current_user.noread_messages = (Messages.query.filter_by(
+            the_id=current_user.id).filter_by(is_read=False).count() + Messages.query.filter_by(
+            post_author_id=current_user.id).filter_by(is_read=False).count())
         db.session.add(current_user)
 
 
@@ -261,10 +262,19 @@ def post(id):
     if form.validate_on_submit():
         comment = Comments(author=current_user.id,
                            post_id=p.id, body=form.body.data, post_author_id=p.author)
-        # notread = User.query.filter_by(id=current_user.id).first()
-        user = User.query.filter_by(id=p.author).first()
         db.session.add(comment)
-
+        db.session.commit()
+        x = re.match('@(.+)\s', form.body.data)
+        if x:
+            username = x.group(1)
+            u = User.query.filter_by(username=username).first()
+            mes = Messages(post_author_id=p.author, the_id=u.id, from_id=current_user.id,
+                           comment_id=p.id, post_id=p.id, body_id=comment.id)
+            db.session.add(mes)
+        else:
+            mes = Messages(post_author_id=p.author, from_id=current_user.id,
+                           post_id=p.id, body_id=comment.id)
+            db.session.add(mes)
         return redirect(url_for('main.post', id=p.id))
     p.ping()
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
@@ -294,19 +304,21 @@ def unfollow_topic(topic):
 @main.route('/user/messages')
 @login_required
 def messages():
-    messages = Comments.query.filter_by(
-        post_author_id=current_user.id).all()[::-1]
+    # messages = Comments.query.filter_by(
+    #     post_author_id=current_user.id).all()[::-1]
+    post_ms = Messages.query.filter_by(
+        post_author_id=current_user.id).all()
+    at_ms = Messages.query.filter_by(
+        the_id=current_user.id).all()
     # for m in messages:
     #     m.read = True
     #     db.session.add(m)
-    return render_template('user/messages.html', messages=messages, search=SearchForm(), User=User, Post=Post, db=db, Comments=Comments)
+    return render_template('user/messages.html', post_ms=post_ms, at_ms=at_ms, search=SearchForm(), User=User, Post=Post, db=db, Comments=Comments)
 
 
 @main.route('/user/messages/read/<id>')
 @login_required
 def read_message(id):
-    m = Comments.query.filter_by(id=id).first()
-    if not m.read:
-        m.read = True
-        db.session.add(m)
-    return redirect(url_for('main.post', id=m.post_id))
+    ms = Messages.query.get_or_404(id)
+    ms.read()
+    return redirect(url_for('main.post', id=ms.post_id))

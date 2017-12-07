@@ -207,23 +207,26 @@ class Messages(db.Model):
     the_id = db.Column(db.Integer, index=True)
     from_id = db.Column(db.Integer, index=True)
     post_id = db.Column(db.Integer, index=True, nullable=True)
+    post_author_id = db.Column(db.Integer, index=True, nullable=True)
     comment_id = db.Column(db.Integer, index=True, nullable=True)
-    read = db.Column(db.Boolean(), default=False)
+    body_id = db.Column(db.Integer, index=True)
+    is_read = db.Column(db.Boolean(), default=False)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
 
     def read(self):
-        self.read = True
+        self.is_read = True
         db.session.add(self)
 
     def read_post_all(id):
         ms = Messages.query.filter_by(the_id=id).filter_by(
-            post_id != None).filter_by(read=False).all()
+            post_id != None).filter_by(is_read=False).all()
         for m in ms:
             m.read = True
             db.session.add(m)
 
     def read_post_all(id):
         ms = Messages.query.filter_by(the_id=id).filter_by(
-            comment_id != None).filter_by(read=False).all()
+            comment_id != None).filter_by(is_read=False).all()
         for m in ms:
             m.read = True
             db.session.add(m)

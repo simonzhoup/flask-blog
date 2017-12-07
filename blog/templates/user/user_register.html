@@ -3,12 +3,41 @@
 
 {% block head %}
 {{ super() }}
-<title>围脖blog -- 注册用户</title>
+<title>围脖blog -- 注册</title>
+<style type="text/css">
+#submit {
+    background-color: transparent;
+    color: #fff;
+}
+.form-group {
+    color: #fff;
+}
+.jumbotron {
+    margin-bottom: 0px;
+    background-size: cover;
+    background-image: url("{{ url_for('static', filename='back/background-image-html.jpg') }}");
+}
+</style>
 {% endblock %}
 
-{% block inside_row %}
-	<div class="register-form col-md-6 col-md-offset-3">
-		<h1 class="text-center" style="margin-bottom:1em">注册用户 </h1>
+{% block content %}
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning col-md-6 col-md-offset-3">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+	<!-- <div class="register-form col-md-6 col-md-offset-3">
+		<h1 class="text-center" style="margin-bottom:1em">登录 </h1>
 		{{ wtf.quick_form(form) }}
-	</div>
+	</div> -->
+    <div class="jumbotron">
+        <div class="container">
+        <div class="register-form col-lg-6 col-lg-offset-3">
+            <h1 class="text-center" style="color: #fff">注册 </h1>
+            {{ wtf.quick_form(form) }}
+        </div>           
+       </div>
+    </div>
 {% endblock %}

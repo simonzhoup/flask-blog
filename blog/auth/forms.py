@@ -5,12 +5,13 @@ from ..models import User
 
 
 class UserRegister(FlaskForm):
-    username = StringField(u'用户名', validators=[Required(), Length(1, 64), Regexp(
+    username = StringField(u'用户名：', validators=[Required(), Length(1, 64), Regexp(
         '^[A-Za-z][A-Za-z0-9]*$', 0, 'Usernames must have only letters,numbers,')])
-    email = StringField(u'邮箱', validators=[Required(), Email(), Length(1, 64)])
+    email = StringField(u'邮箱：', validators=[
+                        Required(), Email(), Length(1, 64)])
     password = PasswordField(
-        u'密码', validators=[Required(), EqualTo('password2', message=u'密码不一致')])
-    password2 = PasswordField(u'确认密码', validators=[Required()])
+        u'密码：', validators=[Required(), EqualTo('password2', message=u'密码不一致')])
+    password2 = PasswordField(u'确认密码：', validators=[Required()])
     submit = SubmitField(u'注册')
 
     def validate_username(self, field):
@@ -23,8 +24,8 @@ class UserRegister(FlaskForm):
 
 
 class UserLogin(FlaskForm):
-    email = StringField(u'邮箱', validators=[
+    email = StringField(u'邮箱：', validators=[
                         Required(), Email(), Length(1, 64)])
     password = StringField(
-        u'密码', validators=[Required(), Length(1, 64)])
+        u'密码：', validators=[Required(), Length(1, 64)])
     submit = SubmitField(u'登录')

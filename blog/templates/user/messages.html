@@ -16,20 +16,38 @@
     	未读消息
     </div>
 	<ul class="list-group">
-		{% if messages == [] or current_user.noread_messages == 0 %}
+		{% if post_ms == [] and at_ms == [] %}
 		<div class="alert alert-info col-xs-8 col-xs-offset-2" style="margin-top: 10px;">没有未读消息</div>
 		{% endif %}
-		{% for s in messages %}
-		{% if not s.read %}
+		{% for m in post_ms[::-1] %}
+		{% if not m.is_read %}
 		<li class="list-group-item col-xs-12">
 			<div class="col-sm-10">
-				<a href="{{ url_for('main.user_index',id=s.author) }}"><strong>{{ User.query.filter_by(id=s.author).first().username }}</strong></a> 评论了您的文章 <a href="{{ url_for('main.read_message',id=s.id) }}#comment" id="read"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a>
+				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 评论了你的文章 <a href="{{ url_for('main.read_message',id=m.id) }}#comment{{ m.body_id }}" id="read"><strong>《{{ Post.query.filter_by(id=m.post_id).first().head }}》</strong></a>
 			</div>
 			<div class="col-sm-2">
 				<button type="button" class="btn btn-default btn-xs" id="time">
 				<span class="glyphicon glyphicon-time"></span>
 						<script>
-						var weekday = moment('{{ s.timestamp }}').locale('zh-cn').fromNow(); 
+						var weekday = moment('{{ m.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>					
+				</button>
+			</div>
+		</li>
+		{% endif %}
+		{% endfor %}
+		{% for m in at_ms[::-1] %}
+		{% if not m.is_read %}
+		<li class="list-group-item col-xs-12">
+			<div class="col-sm-10">
+				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.read_message',id=m.id) }}#comment{{ m.body_id }}" id="read"><strong>《{{ Post.query.filter_by(id=m.post_id).first().head }}》</strong></a>中提到了你
+			</div>
+			<div class="col-sm-2">
+				<button type="button" class="btn btn-default btn-xs" id="time">
+				<span class="glyphicon glyphicon-time"></span>
+						<script>
+						var weekday = moment('{{ m.timestamp }}').locale('zh-cn').fromNow(); 
 						document.write(weekday);
 						</script>					
 				</button>
@@ -45,14 +63,32 @@
     	已读消息
     </div>
 	<ul class="list-group">
-		{% if messages == [] %}
+		{% if post_ms == [] and at_ms == [] %}
 		<div class="alert alert-info col-xs-6 col-xs-offset-3" style="margin-top: 10px;">没有消息</div>
 		{% endif %}	
-		{% for s in messages %}
-		{% if s.read %}
+		{% for s in post_ms[::-1] %}
+		{% if s.is_read %}
 		<li class="list-group-item col-xs-12">
 			<div class="col-sm-10">
-				<p><a href="{{ url_for('main.user_index',id=s.author) }}"><strong>{{ User.query.filter_by(id=s.author).first().username }}</strong></a> 评论了您的文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a></p>
+				<p><a href="{{ url_for('main.user_index',id=s.from_id) }}"><strong>{{ User.query.filter_by(id=s.from_id).first().username }}</strong></a> 评论了你的文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment{{ s.body_id }}"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a></p>
+			</div>
+			<div class="col-sm-2">
+				<button type="button" class="btn btn-default btn-xs" id="read">
+				<span class="glyphicon glyphicon-time"></span>
+					<script>
+					var weekday = moment('{{ s.timestamp }}').locale('zh-cn').fromNow(); 
+					document.write(weekday);
+					</script>					
+				</button>
+			</div>
+		</li>
+		{% endif %}
+		{% endfor %}
+		{% for s in at_ms[::-1] %}
+		{% if s.is_read %}
+		<li class="list-group-item col-xs-12">
+			<div class="col-sm-10">
+				<p><a href="{{ url_for('main.user_index',id=s.from_id) }}"><strong>{{ User.query.filter_by(id=s.from_id).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment{{ s.body_id }}"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a>中提到了你</p>
 			</div>
 			<div class="col-sm-2">
 				<button type="button" class="btn btn-default btn-xs" id="read">

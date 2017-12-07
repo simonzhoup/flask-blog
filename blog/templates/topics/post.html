@@ -22,7 +22,7 @@
 {% block right %}
 <div class="panel panel-primary col-xs-12">
     <div class="panel-heading">
-		<ol class="breadcrumb" style="background-color: #337ab7;padding: 0px;margin-bottom: 0px;">
+		<ol class="breadcrumb">
 		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
 		    <li><a href="{{ url_for('main.topic',topic=topic) }}" style="color: #fff;">{{ topic }}</a></li>
 		    <li><a style="color: #fff;"><strong>帖子</strong></a></li>
@@ -80,7 +80,7 @@
 	{% endif %}
     <ul class="list-group">	
     	{% for c in comments %}
-		<div class="list-group-item col-sm-12">	
+		<div class="list-group-item col-sm-12" id="comment{{ c.id }}">	
 			<div class="col-sm-1">
 				<a href="{{ url_for('main.user_index',id=c.author) }}"><img src="{{ url_for('static',filename='user/avatar/'+User.query.filter_by(id=c.author).first().avatar) }}" height="40" width="40"></a>
 			</div>
@@ -99,7 +99,7 @@
 				<span class="glyphicon glyphicon-comment"></span> 回复
 				</button></a>
 			</div>
-			<th />
+			<hr align=center width=100% color=#987cb9 size=2 style="margin: 0px;">
 			<div class="comment-body col-sm-12">
 				<h4>{{ c.body }}</h4>
 			</div>

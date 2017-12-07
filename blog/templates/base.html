@@ -13,10 +13,23 @@
     <!-- <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet"> -->
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ url_for('static',filename='icon/shortcut.ico') }}">
-    <script src="{{ url_for('static',filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
     <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(window).scroll(function() {
+                if ($(window).scrollTop() > 800)
+                    $('div.go-top').show();
+                else
+                    $('div.go-top').hide();
+            });
+            $('#top').click(function() {
+                $("html, body").animate({scrollTop: 0}, 800);
+            });
+        });
+    </script>
 </head>
 {% endblock %}
 
@@ -123,6 +136,12 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
     </div>
+
+    <body>
+    <div class="go-top" id="top">
+        <p><span class="glyphicon glyphicon-plane"></span></p>
+    </div>
+    </body>
 
 {% block scripts %}
 <script type="text/javascript">
