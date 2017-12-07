@@ -29,7 +29,10 @@
     </div>
 
 </div>
+{% endblock %}
 
+{% block modal %}
+{{ super() }}
 <!-- 模态框（Modal） -->
 <div class="modal fade" id="add-topic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -51,8 +54,8 @@
                 <button type="submit" class="btn btn-primary" onclick="load()">提交</button>
                 {% endif %}
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
+        </div>
+    </div>
 </div>
 {% endblock %}
 

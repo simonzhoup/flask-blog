@@ -30,10 +30,18 @@
             });
         });
     </script>
+    <style type="text/css">
+        canvas {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            z-index: -1;
+        }
+    </style>
 </head>
 {% endblock %}
 
-<body>
+<body id="particles-js">
     <nav class="navbar navbar-default navbar-fixed-top col-md-12">
         <div class="container">
             <div class="navbar-header">
@@ -87,14 +95,14 @@
     {% block content %}
     <div id="warp">
     <div class="container">
-        <div class="row col-lg-12">
+        <div class="row">
         {% block inside_row %}
             <div class="col-lg-3" id="left" style="width: 280px;height: 240px;">
                 {% block left %}{% endblock %}
             </div>
             <div class="clearfix visible-xs"></div>
             <!--left: user info-->
-            <div class="col-lg-8" id="right">
+            <div class="col-lg-9" id="right">
                 {% for message in get_flashed_messages() %}
                 <div class="alert alert-warning">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -110,6 +118,7 @@
     </div>
     {% endblock %}
 
+{% block modal %}
     <footer id="footer">
         <div class="container clearfix">
         <ol class="col-xs-4 breadcrumb" style="background-color: #fff;padding-top: 0px;margin-bottom: 0px;">
@@ -136,17 +145,17 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
     </div>
-
-    <body>
+{% endblock %}
     <div class="go-top" id="top">
         <p><span class="glyphicon glyphicon-plane"></span></p>
     </div>
-    </body>
 
 {% block scripts %}
 <script type="text/javascript">
 document.getElementById("s").setAttribute("placeholder","输入关键字");
 </script>
+<script src="{{ url_for('static',filename='js/particles.js') }}"></script>
+<script src="{{ url_for('static',filename='js/app.js') }}"></script>
 {% endblock %}
 </body>
 </html>
