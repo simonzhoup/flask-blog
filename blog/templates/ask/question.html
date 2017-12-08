@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-<title>{{ p.head }} -- 围脖blog</title>
+<title>{{ q.title }} -- 围脖blog</title>
 {% endblock %}
 
 
@@ -14,45 +14,44 @@
 <div class="panel panel-primary col-xs-12">
     <div class="panel-heading">
 		<ol class="breadcrumb">
-		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
-		    <li><a href="{{ url_for('main.topic',topic=topic) }}" style="color: #fff;">{{ topic }}</a></li>
-		    <li><a style="color: #fff;"><strong>帖子</strong></a></li>
+		    <li><a href="{{ url_for('main.ask') }}" style="color: #fff;">问答</a></li>
+		    <li><a style="color: #fff;"><strong>问题</strong></a></li>
 		</ol>
     </div>
     <ul class="list-group">
 	    <li class="list-group-item">
-	        <h2>{{ p.head }}</h2>
-			<a href="{{ url_for('main.topic',topic=topic) }}">
+	        <h2>{{ q.title }}</h2>
+<!-- 			<a href="">
 			<button type="button" class="btn btn-success btn-xs">
 			<span class="glyphicon glyphicon-tags"></span>
-			 {{ topic }}
-			</button></a>
-			<a href="{{ url_for('main.user_index',id=author.id) }}">
+			 zhuti
+			</button></a> -->
+			<a href="{{ url_for('main.user_index',id=q.author) }}">
 			<button type="button" class="btn btn-default btn-xs" id="read">
-			<span class="glyphicon glyphicon-user"></span>作者：{{ author.username }}
+			<span class="glyphicon glyphicon-user"></span>作者：{{ User.query.filter_by(id=q.author).first().username }}
+			</button></a>
+			<a href="#answer">
+			<button type="button" class="btn btn-default btn-xs" id="read">
+			<span class="glyphicon glyphicon-eye-open"></span> {{ q.reply }}个答案
 			</button></a>
 			<button type="button" class="btn btn-default btn-xs" id="read" disabled>
-			<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
+			<span class="glyphicon glyphicon-eye-open"></span> {{ q.clink }}次阅读
 			</button>
 			<button type="button" class="btn btn-default btn-xs" id="time" disabled>
 			<span class="glyphicon glyphicon-time"></span>
 			<script>
-			var weekday = moment('{{ p.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+			var weekday = moment('{{ q.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
 			document.write(weekday);
 			</script>
 			</button>
-			{% if author.is_self(current_user) %}
+			{% if User.query.filter_by(id=q.author).first().is_self(current_user) %}
 			<button type="button" class="btn btn-primary btn-xs" id="edit">
 			<span class="glyphicon glyphicon-edit"></span> 编辑
 			</button>
-			<a href="{{ url_for('main.delete_post',id=p.id) }}" onclick="return confirm('请确认删除');">
-			<button type="button" class="btn btn-danger btn-xs" id="delete">
-			<span class="glyphicon glyphicon-trash"></span> 删除
-			</button></a>
 			{% endif %}			
 	    </li>
 	    <li class="list-group-item">
-	        <p>{{ p.body|safe }}</p>
+	        <p>{{ q.body|safe }}</p>
 	    </li>
     </ul>	
     <div class="panel-footer">
@@ -60,18 +59,18 @@
     </div>
 </div>
 
-<div class="panel panel-success col-xs-12" id="comment">
+<div class="panel panel-success col-xs-12" id="answer">
     <div class="panel-heading">
-    	文章评论
+    	<strong>{{ q.reply }}</strong> 个答案
     </div>
-	{% if comments == [] %}
+	{% if answers == [] %}
 	<div class="panel-body">
-		<div class="alert alert-info">这篇文章暂时没有评论</div>	
+		<div class="alert alert-info">这个问题暂时还没有人回答</div>	
 	</div>
 	{% endif %}
     <ul class="list-group">	
-    	{% for c in comments %}
-		<div class="list-group-item col-sm-12" id="comment{{ c.id }}">	
+    	{% for c in answers %}
+		<div class="list-group-item col-sm-12" id="answer{{ c.id }}">	
 			<div class="col-sm-1">
 				<a href="{{ url_for('main.user_index',id=c.author) }}"><img src="{{ url_for('static',filename='user/avatar/'+User.query.filter_by(id=c.author).first().avatar) }}" height="40" width="40"></a>
 			</div>
@@ -101,3 +100,5 @@
 
 {% include '_comment.html' %}
 {% endblock %}
+
+

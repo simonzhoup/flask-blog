@@ -52,6 +52,14 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 {% if current_user.is_authenticated %}
                 <button type="submit" class="btn btn-primary" onclick="load()">提交</button>
+                <script>
+                function load(){
+                    //下面两种方法效果是一样的
+                    // document.getElementById("target").onclick();
+                    document.getElementById("submit").click();
+                }
+                document.getElementById("submit1").style.display="none"
+                </script>
                 {% endif %}
             </div>
         </div>
@@ -59,14 +67,3 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-{{ super() }}
-<script>
-function load(){
-    //下面两种方法效果是一样的
-    // document.getElementById("target").onclick();
-    document.getElementById("submit").click();
-}
-document.getElementById("submit").style.display="none"
-</script>
-{% endblock %}

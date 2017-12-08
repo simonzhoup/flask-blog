@@ -4,6 +4,7 @@ from flask_login import UserMixin, current_user
 from datetime import datetime
 from markdown import markdown
 import bleach
+from sqlalchemy import and_, or_
 
 
 @login_manager.user_loader
@@ -160,23 +161,22 @@ class Answer(db.Model):
     """database for QA"""
     __tablename__ = 'answers'
     id = db.Column(db.Integer, primary_key=True)
+    q_author_id = db.Column(db.Integer, index=True)
     q_id = db.Column(db.Integer, index=True)
-    a_id = db.Column(db.Integer, index=True)
-    read = db.Column(db.Boolean(), default=False)
+    author = db.Column(db.Integer, index=True)
+    good = db.Column(db.Integer, default=0)
+    bad = db.Column(db.Integer, default=0)
+    adopt = db.Column(db.Boolean(), default=False)
     body = db.Column(db.Text())
-    body_html = db.Column(db.Text())
     timestamp = db.Column(db.DateTime(), default=datetime.now)
 
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+    def good(self):
+        self.good += 1
+        db.session.add(self)
 
-    # def is_read(self):
-    #     self.read = True
-    #     db.session.add(self)
+    def bad(self):
+        self.good += 1
+        db.session.add(self)
 
 
 class Question(db.Model):
@@ -184,21 +184,23 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.Integer, index=True)
     clink = db.Column(db.Integer, default=0)
+    reply = db.Column(db.Integer, default=0)
+    answer = db.Column(db.Boolean(), default=False)
     title = db.Column(db.Text())
     body = db.Column(db.Text())
-    body_html = db.Column(db.Text())
     timestamp = db.Column(db.DateTime(), default=datetime.now)
 
     @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+    def changde_reply(target, value, oldvalue, initiator):
+        q = Question.query.filter_by(id=value).first()
+        q.reply += 1
+        db.session.add(q)
 
     def read(self):
-        self.read += 1
+        self.clink += 1
         db.session.add(self)
+
+db.event.listen(Answer.q_id, 'set', Question.changde_reply)
 
 
 class Messages(db.Model):
@@ -209,6 +211,8 @@ class Messages(db.Model):
     post_id = db.Column(db.Integer, index=True, nullable=True)
     post_author_id = db.Column(db.Integer, index=True, nullable=True)
     comment_id = db.Column(db.Integer, index=True, nullable=True)
+    q_id = db.Column(db.Integer, index=True, nullable=True)
+    q_author_id = db.Column(db.Integer, index=True, nullable=True)
     body_id = db.Column(db.Integer, index=True)
     is_read = db.Column(db.Boolean(), default=False)
     timestamp = db.Column(db.DateTime(), default=datetime.now)
@@ -217,16 +221,9 @@ class Messages(db.Model):
         self.is_read = True
         db.session.add(self)
 
-    def read_post_all(id):
-        ms = Messages.query.filter_by(the_id=id).filter_by(
-            post_id != None).filter_by(is_read=False).all()
+    def read_all(id):
+        ms = Messages.query.filter(
+            or_(Messages.the_id == id, Messages.post_author_id == id, Messages.q_author_id == id)).all()
         for m in ms:
-            m.read = True
-            db.session.add(m)
-
-    def read_post_all(id):
-        ms = Messages.query.filter_by(the_id=id).filter_by(
-            comment_id != None).filter_by(is_read=False).all()
-        for m in ms:
-            m.read = True
+            m.is_read = True
             db.session.add(m)

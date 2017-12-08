@@ -4,8 +4,8 @@ from flask import render_template, make_response, redirect, url_for, request, fl
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
-from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages
-from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm
+from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages, Answer, Question
+from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm, AskForm
 from .. import db
 from sqlalchemy import and_, or_
 import re
@@ -37,7 +37,8 @@ def before_request():
         current_user.ping()
         current_user.noread_messages = (Messages.query.filter_by(
             the_id=current_user.id).filter_by(is_read=False).count() + Messages.query.filter_by(
-            post_author_id=current_user.id).filter_by(is_read=False).count())
+            post_author_id=current_user.id).filter_by(is_read=False).count() + Messages.query.filter_by(
+            q_author_id=current_user.id).filter_by(is_read=False).count())
         db.session.add(current_user)
 
 
@@ -225,7 +226,7 @@ def new_post():
         return redirect(url_for('main.topics'))
     if form.validate_on_submit():
         p = Post(author=current_user.id, tpoic=form.topic.data,
-                 head=form.head.data, body=form.body.data)
+                 head=form.head.data, body=form.postbody.data)
         db.session.add(p)
         db.session.commit()
         # p = Post.query.order_by(Post.id).first()[::-1]
@@ -257,20 +258,21 @@ def delete_post(id):
 
 @main.route('/post/<id>', methods=['GET', 'POST'])
 def post(id):
-    form = CommentForm()
+    commentform = CommentForm()
     p = Post.query.get_or_404(id)
-    if form.validate_on_submit():
+    if current_user.is_authenticated and commentform.validate_on_submit():
         comment = Comments(author=current_user.id,
-                           post_id=p.id, body=form.body.data, post_author_id=p.author)
+                           post_id=p.id, body=commentform.body.data, post_author_id=p.author)
         db.session.add(comment)
         db.session.commit()
-        x = re.match('@(.+)\s', form.body.data)
+        x = re.match('.*@(.+)\s.*', commentform.body.data)
         if x:
             username = x.group(1)
             u = User.query.filter_by(username=username).first()
-            mes = Messages(post_author_id=p.author, the_id=u.id, from_id=current_user.id,
-                           comment_id=p.id, post_id=p.id, body_id=comment.id)
-            db.session.add(mes)
+            if u:
+                mes = Messages(post_author_id=p.author, the_id=u.id, from_id=current_user.id,
+                               comment_id=p.id, post_id=p.id, body_id=comment.id)
+                db.session.add(mes)
         else:
             mes = Messages(post_author_id=p.author, from_id=current_user.id,
                            post_id=p.id, body_id=comment.id)
@@ -281,7 +283,7 @@ def post(id):
     author = User.query.filter_by(id=p.author).first()
     comments = Comments.query.filter_by(post_id=p.id).all()
 
-    return render_template('topics/post.html', p=p, topic=topic, author=author, form=form, search=SearchForm(), comments=comments, User=User)
+    return render_template('topics/post.html', p=p, topic=topic, author=author, commentform=commentform, search=SearchForm(), comments=comments, User=User)
 
 
 @main.route('/topic/follow/<topic>')
@@ -307,13 +309,20 @@ def messages():
     # messages = Comments.query.filter_by(
     #     post_author_id=current_user.id).all()[::-1]
     post_ms = Messages.query.filter_by(
-        post_author_id=current_user.id).all()
+        post_author_id=current_user.id).filter_by(is_read=False).all()
     at_ms = Messages.query.filter_by(
-        the_id=current_user.id).all()
-    # for m in messages:
-    #     m.read = True
-    #     db.session.add(m)
-    return render_template('user/messages.html', post_ms=post_ms, at_ms=at_ms, search=SearchForm(), User=User, Post=Post, db=db, Comments=Comments)
+        the_id=current_user.id).filter_by(is_read=False).all()
+    a_ms = Messages.query.filter_by(
+        q_author_id=current_user.id).filter_by(is_read=False).all()
+    read_ms = Messages.query.filter_by(is_read=True).all()
+    return render_template('user/messages.html', a_ms=a_ms, Question=Question, post_ms=post_ms, at_ms=at_ms, search=SearchForm(), User=User, Post=Post, Comments=Comments, read_ms=read_ms)
+
+
+@main.route('/user/read_all_messages')
+@login_required
+def read_all_messages():
+    Messages.read_all(current_user.id)
+    return redirect(url_for('main.messages'))
 
 
 @main.route('/user/messages/read/<id>')
@@ -322,3 +331,51 @@ def read_message(id):
     ms = Messages.query.get_or_404(id)
     ms.read()
     return redirect(url_for('main.post', id=ms.post_id))
+
+
+@main.route('/user/messagess/read/<id>')
+@login_required
+def read_messages(id):
+    ms = Messages.query.get_or_404(id)
+    ms.read()
+    return redirect(url_for('main.question', id=ms.q_id))
+
+
+@main.route('/ask', methods=['GET', 'POST'])
+@login_required
+def ask():
+    qs = Question.query.order_by(Question.timestamp).all()
+    form = AskForm()
+    if form.validate_on_submit():
+        q = Question(author=current_user.id,
+                     title=form.title.data, body=form.body.data)
+        db.session.add(q)
+        flash('提问已发布')
+        return redirect(url_for('main.ask'))
+    return render_template('ask/ask_index.html', search=SearchForm(), qs=qs, form=form, User=User)
+
+
+@main.route('/sak/question/<int:id>', methods=['GET', 'POST'])
+def question(id):
+    q = Question.query.get_or_404(id)
+    q.read()
+    commentform = CommentForm()
+    answers = Answer.query.filter_by(q_id=id).all()
+    if current_user.is_authenticated and commentform.validate_on_submit():
+        a = Answer(q_id=id, q_author_id=q.author,
+                   author=current_user.id, body=commentform.body.data)
+        db.session.add(a)
+        x = re.match('.*@(.+)\s.*', commentform.body.data)
+        if x:
+            username = x.group(1)
+            u = User.query.filter_by(username=username).first()
+            if u:
+                mes = Messages(q_author_id=q.author, the_id=u.id, from_id=current_user.id,
+                               comment_id=q.id, q_id=q.id, body_id=a.id)
+                db.session.add(mes)
+        else:
+            mes = Messages(q_author_id=q.author, from_id=current_user.id,
+                           q_id=q.id, body_id=a.id)
+            db.session.add(mes)
+        return redirect(url_for('main.question', id=id))
+    return render_template('ask/question.html', q=q, search=SearchForm(), User=User, commentform=commentform, answers=answers)

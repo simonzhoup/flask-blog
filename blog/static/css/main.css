@@ -80,7 +80,7 @@ div.go-top {
     z-index: 999999;
     position: fixed;
     bottom: 113px;
-    left: 80%;
+    left: 85%;
     margin-left: 40px;
     border: 1px solid #337ab7;
     width: 38px;
@@ -108,4 +108,16 @@ div.modal {
 }
 #footer {
 	opacity:0.7;
+}
+canvas {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 0;
+}
+#body {
+	height: 200px;
+}
+#postbody {
+	height: 400px;
 }

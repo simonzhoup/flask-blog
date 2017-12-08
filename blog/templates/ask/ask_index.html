@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+<title>技术问答 -- 围脖blog</title>
+{% endblock %}
+
+{% block left %}
+{% include '_user_left.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-primary col-xs-12">
+    <div class="panel-heading col-xs-12">
+    	<h3 class="col-xs-6" style="margin-top: 10px;">技术问答</h3>
+    	<a data-toggle="modal" href="#new_wenti"><div class="well well-sm col-xs-6 pull-right" style="color: #000;width: 65px;margin-bottom: 0;">新问题</div></a>	
+    </div>
+	<ul class="list-group">
+		{% for q in qs %}
+		<li class="list-group-item col-xs-12">
+				<a href="{{ url_for('main.question',id=q.id) }}"><h4 class="col-xs-12"><strong>{{ q.title }}</strong></h4></a>
+				<p class="list-meta col-xs-12">
+					<a href="{{ url_for('main.user_index',id=User.query.filter_by(id=q.author).first().id) }}">
+					<button type="button" class="btn btn-info btn-xs">
+					<span class="glyphicon glyphicon-user"></span>
+					作者：{{ User.query.filter_by(id=q.author).first().username }}
+					</button></a>
+					<button type="button" class="btn btn-default btn-xs" id="read">
+					<span class="glyphicon glyphicon-eye-open"></span> {{ q.clink }}次阅读
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="read">
+					<span class="glyphicon glyphicon-eye-open"></span> {{ q.reply }}个答案
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="time">
+					<span class="glyphicon glyphicon-time"></span>
+						<script>
+						var weekday = moment('{{ q.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>				
+					</button>
+				</p>
+		</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}
+
+{% block modal %}
+{{ super() }}
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="new_wenti" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">发表提问</h4>
+            </div>
+            <div class="modal-body">
+                {% if current_user.is_authenticated %}
+            	{{ wtf.quick_form(form) }}
+                {% else %}
+                请登录后进行此操作
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                {% if current_user.is_authenticated %}
+                <button type="submit" class="btn btn-primary" onclick="load()">提交</button>
+                <script>
+				function load(){
+				    //下面两种方法效果是一样的
+				    // document.getElementById("target").onclick();
+				    document.getElementById("submit").click();
+				}
+				document.getElementById("submit1").style.display="none"
+				</script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

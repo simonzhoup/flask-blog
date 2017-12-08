@@ -3,8 +3,6 @@
 
 {% block head %}
 {{ super() }}
- <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
-
 <title>围脖blog -- 新帖子</title>
 <style type="text/css">
 #topic {
@@ -12,9 +10,6 @@
 }
 .form-group:nth-child(4) {
 	display: table;
-}
-#body {
-	height: 300px;
 }
 </style>
 {% endblock %}
@@ -35,40 +30,4 @@
 	<!--     <div class="panel-footer" id="div1">
 		</div> -->
 </div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-<script type="text/javascript" src="{{ url_for('static',filename='dist/js/wangEditor.min.js') }}"></script>
-<script type="text/javascript">
-    // var E = window.wangEditor
-    // var editor = new E('#div1')
-    // var $body = $('#body')
-    // editor.customConfig.onchange = function (html) {
-    //     // 监控变化，同步更新到 textarea
-    //     $body.val(html)
-    // }
-    // editor.create()
-    // // 初始化 textarea 的值
-    // $body.val(editor.txt.html())
-    var editor = new wangEditor('body');
-
-     editor.config.menus = $.map(wangEditor.config.menus, function(item, key) {
-         if (item === 'source') {
-             return null;
-         }
-         if (item === 'location') {
-             return null;
-         }
-         if (item === 'video') {
-             return null;
-         }
-         if (item === 'fullscreen') {
-             return null;
-         }
-         return item;
-     });
-
-    editor.create();
-</script>
 {% endblock %}

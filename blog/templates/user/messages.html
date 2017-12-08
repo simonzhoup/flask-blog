@@ -12,15 +12,15 @@
 
 {% block right %}
 <div class="panel panel-primary col-xs-12">
-    <div class="panel-heading">
-    	未读消息
-    </div>
 	<ul class="list-group">
-		{% if post_ms == [] and at_ms == [] %}
-		<div class="alert alert-info col-xs-8 col-xs-offset-2" style="margin-top: 10px;">没有未读消息</div>
+		<li class="list-group-item col-xs-12" style="background-color: #337ab7;color: #fff;">
+			文章新评论
+		</li>
+		{% if post_ms == [] %}
+		<li class="list-group-item col-xs-12">
+		<div class="alert alert-info col-xs-6 col-xs-offset-3" style="margin-top: 10px;">没有消息</div></li>
 		{% endif %}
 		{% for m in post_ms[::-1] %}
-		{% if not m.is_read %}
 		<li class="list-group-item col-xs-12">
 			<div class="col-sm-10">
 				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 评论了你的文章 <a href="{{ url_for('main.read_message',id=m.id) }}#comment{{ m.body_id }}" id="read"><strong>《{{ Post.query.filter_by(id=m.post_id).first().head }}》</strong></a>
@@ -35,13 +35,20 @@
 				</button>
 			</div>
 		</li>
-		{% endif %}
 		{% endfor %}
-		{% for m in at_ms[::-1] %}
-		{% if not m.is_read %}
+
+
+		<li class="list-group-item col-xs-12" style="background-color: #337ab7;color: #fff;">
+			问题新回答
+		</li>
+		{% if a_ms == [] %}
+		<li class="list-group-item col-xs-12">
+		<div class="alert alert-info col-xs-6 col-xs-offset-3" style="margin-top: 10px;">没有消息</div></li>
+		{% endif %}
+		{% for m in a_ms[::-1] %}
 		<li class="list-group-item col-xs-12">
 			<div class="col-sm-10">
-				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.read_message',id=m.id) }}#comment{{ m.body_id }}" id="read"><strong>《{{ Post.query.filter_by(id=m.post_id).first().head }}》</strong></a>中提到了你
+				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 回答了你的问题 <a href="{{ url_for('main.read_messages',id=m.id) }}#answer{{ m.body_id }}" id="read"><strong>《{{ Question.query.filter_by(id=m.q_id).first().title }}》</strong></a>
 			</div>
 			<div class="col-sm-2">
 				<button type="button" class="btn btn-default btn-xs" id="time">
@@ -53,56 +60,71 @@
 				</button>
 			</div>
 		</li>
+		{% endfor %}
+
+
+		<li class="list-group-item col-xs-12" style="background-color: #337ab7;color: #fff;">
+			@消息
+		</li>		
+		{% if at_ms == [] %}
+		<li class="list-group-item col-xs-12">
+		<div class="alert alert-info col-xs-6 col-xs-offset-3" style="margin-top: 10px;">没有消息</div></li>
 		{% endif %}
+		{% for m in at_ms[::-1] %}
+		<li class="list-group-item col-xs-12">
+			{% if m.post_id %}
+			<div class="col-sm-10">
+				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.read_message',id=m.id) }}#comment{{ m.body_id }}" id="read"><strong>《{{ Post.query.filter_by(id=m.post_id).first().head }}》</strong></a>中提到了你
+			</div>
+			{% elif m.q_id %}
+			<div class="col-sm-10">
+				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 在问题 <a href="{{ url_for('main.read_messages',id=m.id) }}#answer{{ m.body_id }}" id="read"><strong>《{{ Question.query.filter_by(id=m.q_id).first().title }}》</strong></a>中提到了你
+			</div>
+			{% endif %}
+			<div class="col-sm-2">
+				<button type="button" class="btn btn-default btn-xs" id="time">
+				<span class="glyphicon glyphicon-time"></span>
+						<script>
+						var weekday = moment('{{ m.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>					
+				</button>
+			</div>
+		</li>
 		{% endfor %}		
 	</ul>
 </div>
+<a href="{{ url_for('main.read_all_messages') }}"><button type="button" class="btn btn-primary">清除所有消息</button>
 
-<div class="panel panel-default col-xs-12">
+
+
+<!-- <div class="panel panel-default col-xs-12">
     <div class="panel-heading">
     	已读消息
     </div>
 	<ul class="list-group">
-		{% if post_ms == [] and at_ms == [] %}
-		<div class="alert alert-info col-xs-6 col-xs-offset-3" style="margin-top: 10px;">没有消息</div>
-		{% endif %}	
-		{% for s in post_ms[::-1] %}
-		{% if s.is_read %}
+		<li class="list-group-item col-xs-12" style="background-color: #337ab7;color: #fff;">
+			文章评论
+		</li>
+	    {% for m in read_ms %}
+		{% if m.post_id %}
 		<li class="list-group-item col-xs-12">
 			<div class="col-sm-10">
-				<p><a href="{{ url_for('main.user_index',id=s.from_id) }}"><strong>{{ User.query.filter_by(id=s.from_id).first().username }}</strong></a> 评论了你的文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment{{ s.body_id }}"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a></p>
+				<a href="{{ url_for('main.user_index',id=m.from_id) }}"><strong>{{ User.query.filter_by(id=m.from_id).first().username }}</strong></a> 评论了你的文章 <a href="{{ url_for('main.read_message',id=m.id) }}#comment{{ m.body_id }}" id="read"><strong>《{{ Post.query.filter_by(id=m.post_id).first().head }}》</strong></a>
 			</div>
 			<div class="col-sm-2">
-				<button type="button" class="btn btn-default btn-xs" id="read">
+				<button type="button" class="btn btn-default btn-xs" id="time">
 				<span class="glyphicon glyphicon-time"></span>
-					<script>
-					var weekday = moment('{{ s.timestamp }}').locale('zh-cn').fromNow(); 
-					document.write(weekday);
-					</script>					
+						<script>
+						var weekday = moment('{{ m.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>					
 				</button>
 			</div>
 		</li>
-		{% endif %}
+		{% endif %}		
 		{% endfor %}
-		{% for s in at_ms[::-1] %}
-		{% if s.is_read %}
-		<li class="list-group-item col-xs-12">
-			<div class="col-sm-10">
-				<p><a href="{{ url_for('main.user_index',id=s.from_id) }}"><strong>{{ User.query.filter_by(id=s.from_id).first().username }}</strong></a> 在文章 <a href="{{ url_for('main.post',id=s.post_id) }}#comment{{ s.body_id }}"><strong>《{{ Post.query.filter_by(id=s.post_id).first().head }}》</strong></a>中提到了你</p>
-			</div>
-			<div class="col-sm-2">
-				<button type="button" class="btn btn-default btn-xs" id="read">
-				<span class="glyphicon glyphicon-time"></span>
-					<script>
-					var weekday = moment('{{ s.timestamp }}').locale('zh-cn').fromNow(); 
-					document.write(weekday);
-					</script>					
-				</button>
-			</div>
-		</li>
-		{% endif %}
-		{% endfor %}		
 	</ul>
-</div>
+</div> -->
 
 {% endblock %}

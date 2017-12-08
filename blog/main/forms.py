@@ -40,12 +40,12 @@ class TopicForm(FlaskForm):
     topic_info = TextAreaField('话题描述')
     topic_img = FileField('话题图片', validators=[
                           FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
-    submit = SubmitField('提交')
+    submit1 = SubmitField('提交')
 
 
 class PostForm(FlaskForm):
     head = StringField('标题', validators=[Required(), Length(1, 64)])
-    body = TextAreaField('内容', validators=[Required()])
+    postbody = TextAreaField('内容', validators=[Required()])
     topic = SelectField('所属话题', coerce=int)
     submit = SubmitField('提交')
 
@@ -57,7 +57,7 @@ class PostForm(FlaskForm):
 
 class EditTopic(FlaskForm):
     topic_info = TextAreaField('话题描述')
-    submit = SubmitField('提交')
+    submit1 = SubmitField('提交')
 
 
 class CommentForm(FlaskForm):
@@ -67,4 +67,10 @@ class CommentForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     s = StringField('', validators=[Length(1, 64)])
-    submit1 = SubmitField('搜索')
+    submit = SubmitField('搜索')
+
+
+class AskForm(FlaskForm):
+    title = StringField('标题', validators=[Required(), Length(1, 64)])
+    body = TextAreaField('问题描述', validators=[Required()])
+    submit1 = SubmitField('提交')
