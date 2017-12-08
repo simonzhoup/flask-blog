@@ -1,6 +1,13 @@
+
+
 <div class="panel panel-default col-xs-12" style="padding-bottom: 20px;">
     <div class="panel-heading">
-    	<strong>{{ user.username }}</strong>的文章
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#">{{ user.username }}的动态</a></li>
+			<li><a href="#">提问</a></li>
+			<li><a href="#">回答</a></li>
+			<li><a href="#">评论</a></li>
+		</ul>
     </div>
 	{% if posts == [] %}
 	<div class="panel-body">

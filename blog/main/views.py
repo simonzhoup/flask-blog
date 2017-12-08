@@ -103,8 +103,45 @@ def user_index(id):
     user = User.query.get_or_404(id)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
+    show = 0
+    if current_user.is_authenticated():
+        show = request.cookies.get('show', '')
+    if show_followed == 0:
+        pass
     posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
     return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, search=SearchForm(), Comments=Comments)
+
+
+@main.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('.user_index')))
+    resp.set_cookie('show', '0', max_age=30 * 24 * 60 * 60)
+    return resp
+
+
+@main.route('/post')
+@login_required
+def show_post():
+    resp = make_response(redirect(url_for('.user_index')))
+    resp.set_cookie('show', '1', max_age=30 * 24 * 60 * 60)
+    return resp
+
+
+@main.route('/answer')
+@login_required
+def show_answer():
+    resp = make_response(redirect(url_for('.user_index')))
+    resp.set_cookie('show', '2', max_age=30 * 24 * 60 * 60)
+    return resp
+
+
+@main.route('/comment')
+@login_required
+def show_comment():
+    resp = make_response(redirect(url_for('.user_index')))
+    resp.set_cookie('show', '3', max_age=30 * 24 * 60 * 60)
+    return resp
 
 # 用户设置
 
