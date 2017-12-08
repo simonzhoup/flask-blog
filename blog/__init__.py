@@ -4,10 +4,7 @@ from config import config
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_moment import Moment
 import pymysql
-from qiniu import Auth, put_file, etag, urlsafe_base64_encode
-import qiniu.config
 pymysql.install_as_MySQLdb()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -15,13 +12,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
-moment = Moment()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.user_login'
-q = Auth('jrFL91mRGNiP2cAuLJtOLEE5rYCzUrzw-3BMskl4',
-         'S2Mj_wgFgyLi3Nkb3AqZck1lYP5XPY0phxAersbH')
-bucket_name = 'flask-web'
 
 
 def create_blog(config_name):
@@ -32,7 +25,6 @@ def create_blog(config_name):
     bootstrap.init_app(blog)
     db.init_app(blog)
     login_manager.init_app(blog)
-    moment.init_app(blog)
 
     # 注册蓝本
     from .main import main as main_buleprint

@@ -4,9 +4,9 @@ from blog import db
 from flask_migrate import Migrate, MigrateCommand
 
 blog = create_blog('development')
-manage = Manager(blog)
+manager = Manager(blog)
 migrate = Migrate(blog, db)
-manage.add_command('db', MigrateCommand)
+manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
-    manage.run()
+    manager.run()

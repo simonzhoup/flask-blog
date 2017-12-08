@@ -2,8 +2,6 @@ from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
 from datetime import datetime
-from markdown import markdown
-import bleach
 from sqlalchemy import and_, or_
 
 
@@ -142,19 +140,9 @@ class Comments(db.Model):
     read = db.Column(db.Boolean(), default=False)
     timestamp = db.Column(db.DateTime(), default=datetime.now)
 
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'), tags=allowed_tags, strip=True))
-
     def read_comment(self):
         self.read = True
         db.session.add(self)
-
-
-db.event.listen(Comments.body, 'set', Comments.on_changed_body)
 
 
 class Answer(db.Model):

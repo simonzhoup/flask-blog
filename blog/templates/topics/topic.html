@@ -20,15 +20,15 @@
 		</ol>
     </div>
     <div class="panel-body">
-        <div class="topic-img col-xs-2">
-        <img src="{{ url_for('static',filename='topics/'+t.img) }}" style="width: 80px;height: 80px;">
+        <div class="topic-img col-md-2">
+        <img src="{{ url_for('static',filename='topics/'+t.img) }}" class="img-circle center-block" style="width: 100px;height: 100px;">
         <p><h4 class="text-center" style="padding-top: 10px;"><strong>{{ t.topic }}</strong></h4></p>
         </div>
-        <div class="topic-body col-xs-5">
+        <div class="topic-body col-md-6">
         <p><strong>话题介绍:</strong></p>
         <p>{{ t.info }}</p>
         </div>
-        <div class="topic-info col-xs-5">
+        <div class="topic-info col-md-4">
         <p>话题创建者：
         <a href="{{ url_for('main.user_index',id=t.author) }}">{{ User.query.filter_by(id=t.author).first().username }}</p></a>
         <p>话题创建时间:
@@ -135,9 +135,9 @@
 function load(){
     //下面两种方法效果是一样的
     // document.getElementById("target").onclick();
-    document.getElementById("submit").click();
+    document.getElementById("submit1").click();
 }
-document.getElementById("submit").style.display="none"
+document.getElementById("submit1").style.display="none"
 </script>
 <style type="text/css">
 #topic_info {

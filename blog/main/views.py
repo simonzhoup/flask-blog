@@ -183,7 +183,7 @@ def user_unfollow(id):
 def topics():
     topics = Topic.query.all()
     form = TopicForm()
-    if form.validate_on_submit():
+    if current_user.is_authenticated and form.validate_on_submit():
         t = Topic(topic=form.topic_name.data,
                   info=form.topic_info.data, author=current_user.id)
         db.session.add(t)
