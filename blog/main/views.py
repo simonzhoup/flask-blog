@@ -103,44 +103,54 @@ def user_index(id):
     user = User.query.get_or_404(id)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    show = 0
-    if current_user.is_authenticated():
-        show = request.cookies.get('show', '')
-    if show_followed == 0:
-        pass
-    posts = Post.query.filter_by(author=user.id).order_by(Post.timestamp).all()
-    return render_template('index.html', user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, search=SearchForm(), Comments=Comments)
+    show = '0'
+    show = request.cookies.get('show', '')
+    if show == '':
+        q = Post
+    elif show == '1':
+        q = Post
+    elif show == '2':
+        q = Answer
+    elif show == '3':
+        q = Comments
+    elif show == '4':
+        q = Question
+    posts = q.query.filter_by(author=user.id).order_by(q.timestamp).all()
+    return render_template('index.html', show=show, user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, search=SearchForm(), Comments=Comments, Post=Post, Question=Question)
 
 
-@main.route('/all')
-@login_required
-def show_all():
-    resp = make_response(redirect(url_for('.user_index')))
+@main.route('/all/<id>')
+def show_all(id):
+    resp = make_response(redirect(url_for('.user_index', id=id)))
     resp.set_cookie('show', '0', max_age=30 * 24 * 60 * 60)
     return resp
 
 
-@main.route('/post')
-@login_required
-def show_post():
-    resp = make_response(redirect(url_for('.user_index')))
+@main.route('/posts/<id>')
+def show_post(id):
+    resp = make_response(redirect(url_for('.user_index', id=id)))
     resp.set_cookie('show', '1', max_age=30 * 24 * 60 * 60)
     return resp
 
 
-@main.route('/answer')
-@login_required
-def show_answer():
-    resp = make_response(redirect(url_for('.user_index')))
+@main.route('/answer/<id>')
+def show_answer(id):
+    resp = make_response(redirect(url_for('.user_index', id=id)))
     resp.set_cookie('show', '2', max_age=30 * 24 * 60 * 60)
     return resp
 
 
-@main.route('/comment')
-@login_required
-def show_comment():
-    resp = make_response(redirect(url_for('.user_index')))
+@main.route('/comment/<id>')
+def show_comment(id):
+    resp = make_response(redirect(url_for('.user_index', id=id)))
     resp.set_cookie('show', '3', max_age=30 * 24 * 60 * 60)
+    return resp
+
+
+@main.route('/question/<id>')
+def show_question(id):
+    resp = make_response(redirect(url_for('.user_index', id=id)))
+    resp.set_cookie('show', '4', max_age=30 * 24 * 60 * 60)
     return resp
 
 # 用户设置
@@ -319,7 +329,6 @@ def post(id):
     topic = Topic.query.filter_by(id=p.tpoic).first().topic
     author = User.query.filter_by(id=p.author).first()
     comments = Comments.query.filter_by(post_id=p.id).all()
-
     return render_template('topics/post.html', p=p, topic=topic, author=author, commentform=commentform, search=SearchForm(), comments=comments, User=User)
 
 
@@ -379,7 +388,6 @@ def read_messages(id):
 
 
 @main.route('/ask', methods=['GET', 'POST'])
-@login_required
 def ask():
     qs = Question.query.order_by(Question.timestamp).all()
     form = AskForm()
@@ -416,3 +424,21 @@ def question(id):
             db.session.add(mes)
         return redirect(url_for('main.question', id=id))
     return render_template('ask/question.html', q=q, search=SearchForm(), User=User, commentform=commentform, answers=answers)
+
+
+@main.route('/sak/question/app/<int:id>%<int:q_id>')
+@login_required
+def app_answer(id, q_id):
+    a = Answer.query.get_or_404(id)
+    if a:
+        a.up()
+    return redirect(url_for('main.question', id=q_id))
+
+
+@main.route('/sak/question/opp/<int:id>%<int:q_id>')
+@login_required
+def opp_answer(id, q_id):
+    a = Answer.query.get_or_404(id)
+    if a:
+        a.down()
+    return redirect(url_for('main.question', id=q_id))

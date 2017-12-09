@@ -152,18 +152,18 @@ class Answer(db.Model):
     q_author_id = db.Column(db.Integer, index=True)
     q_id = db.Column(db.Integer, index=True)
     author = db.Column(db.Integer, index=True)
-    good = db.Column(db.Integer, default=0)
-    bad = db.Column(db.Integer, default=0)
+    app = db.Column(db.Integer, default=0)
+    opp = db.Column(db.Integer, default=0)
     adopt = db.Column(db.Boolean(), default=False)
     body = db.Column(db.Text())
     timestamp = db.Column(db.DateTime(), default=datetime.now)
 
-    def good(self):
-        self.good += 1
+    def up(self):
+        self.app += 1
         db.session.add(self)
 
-    def bad(self):
-        self.good += 1
+    def down(self):
+        self.opp += 1
         db.session.add(self)
 
 

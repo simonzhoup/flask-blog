@@ -3,10 +3,10 @@
 <div class="panel panel-default col-xs-12" style="padding-bottom: 20px;">
     <div class="panel-heading">
 		<ul class="nav nav-tabs">
-			<li class="active"><a href="#">{{ user.username }}的动态</a></li>
-			<li><a href="#">提问</a></li>
-			<li><a href="#">回答</a></li>
-			<li><a href="#">评论</a></li>
+			<li {% if show == '1' %} class="active {% endif %}"><a href="{{ url_for('main.show_post',id=user.id) }}">文章</a></li>
+			<li {% if show == '4' %} class="active {% endif %}"><a href="{{ url_for('main.show_question',id=user.id) }}">问题</a></li>
+			<li {% if show == '2' %} class="active {% endif %}"><a href="{{ url_for('main.show_answer',id=user.id) }}">回答</a></li>
+			<li {% if show == '3' %} class="active {% endif %}"><a href="{{ url_for('main.show_comment',id=user.id) }}">评论</a></li>
 		</ul>
     </div>
 	{% if posts == [] %}
@@ -17,7 +17,8 @@
 	<ul class="list-group">
 		{% for p in posts %}
 		<li class="list-group-item col-xs-12">
-				<a href="{{ url_for('main.post',id=p.id) }}"><h4 class="col-xs-12"><strong>{{ p.head }}</strong></h4></a>
+				{% if show == '1' %}
+				<a href="{{ url_for('main.post',id=p.id) }}"><h5 class="col-xs-12"><strong>{{ p.head }}</strong></h5></a>
 				<p class="list-meta col-xs-12">
 					<a href="{{ url_for('main.topic',topic=Topic.query.filter_by(id=p.tpoic).first().topic) }}">
 					<button type="button" class="btn btn-success btn-xs">
@@ -30,7 +31,7 @@
 					<button type="button" class="btn btn-default btn-xs" id="time" disabled>
 					<span class="glyphicon glyphicon-time"></span>
 						<script>
-						var weekday = moment('{{ p.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						var weekday = moment('{{ p.timestamp }}').locale('zh-cn').fromNow(); 
 						document.write(weekday);
 						</script>					
 					</button>
@@ -38,6 +39,47 @@
 					<span class="glyphicon glyphicon-comment"></span> {{ Comments.query.filter_by(post_id=p.id).count() }}条评论
 					</button>
 				</p>
+
+				{% elif show == '2' %}
+				<h5 class="col-xs-10">回答了问题<a href="{{ url_for('main.question',id=p.q_id) }}"><strong>《{{ Question.query.filter_by(id=p.q_id).first().title }}》</strong></a></h5>
+				<p class="list-meta col-xs-2">
+					<button type="button" class="btn btn-default btn-xs" id="time" disabled>
+					<span class="glyphicon glyphicon-time"></span>
+						<script>
+						var weekday = moment('{{ p.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>					
+					</button>
+				</p>
+				{% elif show == '3' %}
+				<h5 class="col-xs-10">评论了文章<a href="{{ url_for('main.post',id=p.id) }}"><strong>《{{ Post.query.filter_by(id=p.post_id).first().head }}》</strong></a></h5>
+				<p class="list-meta col-xs-2">
+					<button type="button" class="btn btn-default btn-xs" id="time" disabled>
+					<span class="glyphicon glyphicon-time"></span>
+						<script>
+						var weekday = moment('{{ p.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>					
+					</button>
+				</p>				
+				{% elif show == '4' %}
+				<a href="{{ url_for('main.question',id=p.id) }}"><h5 class="col-xs-12"><strong>{{ p.title }}</strong></h5></a>
+				<p class="list-meta col-xs-12">
+					<button type="button" class="btn btn-default btn-xs" id="read" disabled>
+					<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="read" disabled>
+					<span class="glyphicon glyphicon-eye-open"></span> {{ p.reply }}个答案
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="time" disabled>
+					<span class="glyphicon glyphicon-time"></span>
+						<script>
+						var weekday = moment('{{ p.timestamp }}').locale('zh-cn').fromNow(); 
+						document.write(weekday);
+						</script>					
+					</button>
+				</p>
+				{% endif %}
 		</li>
 		{% endfor %}		
 	</ul>
