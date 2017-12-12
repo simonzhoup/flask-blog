@@ -173,7 +173,7 @@ class Question(db.Model):
     author = db.Column(db.Integer, index=True)
     clink = db.Column(db.Integer, default=0)
     reply = db.Column(db.Integer, default=0)
-    answer = db.Column(db.Boolean(), default=False)
+    answer = db.Column(db.Integer)
     title = db.Column(db.Text())
     body = db.Column(db.Text())
     timestamp = db.Column(db.DateTime(), default=datetime.now)

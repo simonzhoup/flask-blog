@@ -20,7 +20,14 @@
     </div>
     <ul class="list-group">
 	    <li class="list-group-item">
-	        <h2>{{ q.title }}</h2>
+	    	{% if q.answer %}
+	    	<p style="font-size: 30px;padding-top: 10px;">
+			<button type="button" class="btn btn-success btn-xs">
+			  	<span class="glyphicon glyphicon-ok"></span> 已解决
+			</button> {{ q.title }}</p>
+	    	{% else %}
+	    	<h2>{{ q.title }}</h2>
+	    	{% endif %}
 <!-- 			<a href="">
 			<button type="button" class="btn btn-success btn-xs">
 			<span class="glyphicon glyphicon-tags"></span>
@@ -87,17 +94,24 @@
 				<div style="position: absolute;left: 80px;top: 12px;">
 					<a href="{{ url_for('main.app_answer',id=c.id,q_id=c.q_id) }}">
 					<button type="button" class="btn btn-primary btn-xs">
-					  	<span class="glyphicon glyphicon-thumbs-up"></span>{{ c.app }}
+					  	<span class="glyphicon glyphicon-thumbs-up"></span> {{ c.app }}
 					</button>
 					</a>
 					<a href="{{ url_for('main.opp_answer',id=c.id,q_id=c.q_id) }}">
 					<button type="button" class="btn btn-default btn-xs">
-					  	<span class="glyphicon glyphicon-thumbs-down"></span>{{ c.opp }}
+					  	<span class="glyphicon glyphicon-thumbs-down"></span> {{ c.opp }}
 					</button>
 					</a>
 					{% if current_user.is_authenticated and current_user.id == q.author and not q.answer%}
+					<a href="{{ url_for('main.is_answer',id=q.id,ad=c.id) }}">
 					<button type="button" class="btn btn-success btn-xs">
 					  	<span class="glyphicon glyphicon-ok"></span> 采纳
+					</button>
+					</a>
+					{% endif %}
+					{% if c.adopt %}
+					<button type="button" class="btn btn-success btn-xs">
+					  	<span class="glyphicon glyphicon-ok"></span> 已采纳
 					</button>
 					{% endif %}
 				</div>

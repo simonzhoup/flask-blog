@@ -40,6 +40,10 @@ def before_request():
             post_author_id=current_user.id).filter_by(is_read=False).count() + Messages.query.filter_by(
             q_author_id=current_user.id).filter_by(is_read=False).count())
         db.session.add(current_user)
+    elif current_user.email == '540918220@qq.com':
+        flash('111')
+        current_user.admin == True
+        db.session.add(current_user)
 
 
 @main.route('/user/seting/', methods=['GET', 'POST'])
@@ -103,11 +107,8 @@ def user_index(id):
     user = User.query.get_or_404(id)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    show = '0'
     show = request.cookies.get('show', '')
-    if show == '':
-        q = Post
-    elif show == '1':
+    if show == '1':
         q = Post
     elif show == '2':
         q = Answer
@@ -115,7 +116,11 @@ def user_index(id):
         q = Comments
     elif show == '4':
         q = Question
-    posts = q.query.filter_by(author=user.id).order_by(q.timestamp).all()
+    posts = db.session.query(q).filter_by(
+        author=user.id).order_by(q.timestamp).all()
+    # if show == '0':
+    #     post = db.session.query(Post).join(Answer).join(Comments).join(
+    #         Question).filter_by(author=user.id).order_by(timestamp).all()
     return render_template('index.html', show=show, user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, search=SearchForm(), Comments=Comments, Post=Post, Question=Question)
 
 
@@ -442,3 +447,15 @@ def opp_answer(id, q_id):
     if a:
         a.down()
     return redirect(url_for('main.question', id=q_id))
+
+
+@main.route('/sak/question<int:id>/answer<int:ad>')
+@login_required
+def is_answer(id, ad):
+    q = Question.query.get_or_404(id)
+    q.answer = ad
+    a = Answer.query.get_or_404(ad)
+    a.adopt = True
+    db.session.add(q)
+    db.session.add(a)
+    return redirect(url_for('main.question', id=id))

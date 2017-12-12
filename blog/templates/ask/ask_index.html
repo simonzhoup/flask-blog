@@ -38,6 +38,11 @@
 						document.write(weekday);
 						</script>				
 					</button>
+					{% if q.answer %}
+					<button type="button" class="btn btn-success btn-xs">
+					  	<span class="glyphicon glyphicon-ok"></span> 已解决
+					</button>
+					{% endif %}
 				</p>
 		</li>
 		{% endfor %}
