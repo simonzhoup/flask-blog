@@ -15,17 +15,17 @@
     <div class="panel-heading">
 		<ol class="breadcrumb">
 		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
-		    <li><a href="{{ url_for('main.topic',topic=topic) }}" style="color: #fff;">{{ topic }}</a></li>
+		    <li><a href="{{ url_for('main.topic',topic=p.post_topic.topic) }}" style="color: #fff;">{{ p.post_topic.topic }}</a></li>
 		    <li><a style="color: #fff;"><strong>帖子</strong></a></li>
 		</ol>
     </div>
     <ul class="list-group">
 	    <li class="list-group-item">
 	        <h2>{{ p.head }}</h2>
-			<a href="{{ url_for('main.topic',topic=topic) }}">
+			<a href="{{ url_for('main.topic',topic=p.post_topic.topic) }}">
 			<button type="button" class="btn btn-success btn-xs">
 			<span class="glyphicon glyphicon-tags"></span>
-			 {{ topic }}
+			 {{ p.post_topic.topic }}
 			</button></a>
 			<a href="{{ url_for('main.user_index',id=author.id) }}">
 			<button type="button" class="btn btn-default btn-xs" id="read">
@@ -73,10 +73,10 @@
     	{% for c in comments %}
 		<div class="list-group-item col-sm-12" id="comment{{ c.id }}">	
 			<div class="col-sm-1">
-				<a href="{{ url_for('main.user_index',id=c.author) }}"><img src="{{ url_for('static',filename='user/avatar/'+User.query.filter_by(id=c.author).first().avatar) }}" height="40" width="40"></a>
+				<a href="{{ url_for('main.user_index',id=c.author) }}"><img src="{{ url_for('static',filename='user/avatar/'+c.comment_author.avatar) }}" height="40" width="40"></a>
 			</div>
 			<div class="col-sm-6">
-				<a href="{{ url_for('main.user_index',id=c.author) }}">{{ User.query.filter_by(id=c.author).first().username }}</a>
+				<a href="{{ url_for('main.user_index',id=c.author) }}">{{ c.comment_author.username }}</a>
 				<p class="text-muted">
 					<script>
 					var weekday = moment('{{ c.timestamp }}').locale('zh-cn').fromNow(); 

@@ -17,7 +17,7 @@
     </div>
 	{% if posts == [] %}
 	<div class="panel-body">
-		<div class="alert alert-info">这里还没有任何文章哟～</div>
+		<div class="alert alert-info">没有搜索到任何东西～</div>
 	</div>
 	{% else %}
 	<ul class="list-group">
@@ -25,15 +25,15 @@
 		<li class="list-group-item col-xs-12">
 				<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="col-xs-12"><strong>{{ p.head }}</strong></h3></a>
 				<p class="list-meta col-xs-12">
-					<a href="{{ url_for('main.user_index',id=User.query.filter_by(id=p.author).first().id) }}">
+					<a href="{{ url_for('main.user_index',id=p.post_author.id) }}">
 					<button type="button" class="btn btn-info btn-xs">
 					<span class="glyphicon glyphicon-user"></span>
-					作者：{{ User.query.filter_by(id=p.author).first().username }}
+					作者：{{ p.post_author.username }}
 					</button></a>
-					<a href="{{ url_for('main.topic',topic=Topic.query.filter_by(id=p.tpoic).first().topic) }}">
+					<a href="{{ url_for('main.topic',topic=p.post_topic.topic) }}">
 					<button type="button" class="btn btn-success btn-xs">
 					<span class="glyphicon glyphicon-tags"></span>
-					 {{ Topic.query.filter_by(id=p.tpoic).first().topic }}
+					 {{ p.post_topic.topic }}
 					</button></a>
 					<button type="button" class="btn btn-default btn-xs" id="read">
 					<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }}次阅读

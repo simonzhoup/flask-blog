@@ -23,7 +23,7 @@ def Searchs(xxx):
     sss = '%' + xxx + '%'
     posts = Post.query.filter(
         or_(Post.body.like(sss), Post.head.like(sss))).all()
-    return render_template('search.html', posts=posts, search=SearchForm(), Topic=Topic, User=User)
+    return render_template('search.html', posts=posts, search=SearchForm())
 
 
 @main.before_app_request
@@ -39,10 +39,6 @@ def before_request():
             the_id=current_user.id).filter_by(is_read=False).count() + Messages.query.filter_by(
             post_author_id=current_user.id).filter_by(is_read=False).count() + Messages.query.filter_by(
             q_author_id=current_user.id).filter_by(is_read=False).count())
-        db.session.add(current_user)
-    elif current_user.email == '540918220@qq.com':
-        flash('111')
-        current_user.admin == True
         db.session.add(current_user)
 
 
@@ -93,10 +89,7 @@ def user_seting():
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
-    # search = Search()
-    # if search:
-    # return render_template('search.html', posts=search, search=SearchForm(),
-    # Topic=Topic)
+
     return render_template('home.html', user=current_user, search=SearchForm())
 
 # 用户主页
@@ -191,9 +184,7 @@ def email_resp():
 def user_follower_all(id):
     user = User.query.get_or_404(id)
     all_follower = user.all_follower()
-    c1 = Follow.query.filter_by(follower_id=user.id).count()
-    c2 = Follow.query.filter_by(followed_id=user.id).count()
-    return render_template('index.html', user=user, User=User, index='follower-all,index', all_follower=all_follower, c1=c1, c2=c2, search=SearchForm())
+    return render_template('index.html', user=user, index='follower-all,index', all_follower=all_follower, search=SearchForm())
 
 # 所有关注的人界面
 
@@ -202,9 +193,7 @@ def user_follower_all(id):
 def user_followed_all(id):
     user = User.query.get_or_404(id)
     all_followed = user.all_follow()
-    c1 = Follow.query.filter_by(follower_id=user.id).count()
-    c2 = Follow.query.filter_by(followed_id=user.id).count()
-    return render_template('index.html', user=user, User=User, index='followed-all,index', all_followed=all_followed, c1=c1, c2=c2, search=SearchForm())
+    return render_template('index.html', user=user, index='followed-all,index', all_followed=all_followed, search=SearchForm())
 
 # 关注用户
 
@@ -237,7 +226,7 @@ def topics():
     form = TopicForm()
     if current_user.is_authenticated and form.validate_on_submit():
         t = Topic(topic=form.topic_name.data,
-                  info=form.topic_info.data, author=current_user.id)
+                  info=form.topic_info.data, author=current_user)
         db.session.add(t)
         img = form.topic_img.data
         img.save('blog/static/topics/%s.jpg' % form.topic_name.data)
@@ -263,8 +252,8 @@ def topic(topic):
     form.topic_info.data = t.info
     f = None
     if current_user.is_authenticated:
-        f = TopicFollows.is_follow(current_user.id, t.id)
-    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, User=User, form=form, search=SearchForm(), Comments=Comments)
+        f = current_user.is_follow_t(t)
+    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, form=form, search=SearchForm(), Comments=Comments)
 
 # 新帖子
 
@@ -284,7 +273,7 @@ def new_post():
         # p = Post.query.order_by(Post.id).first()[::-1]
         return redirect(url_for('main.post', id=p.id))
     topics = Topic.query.order_by(Topic.id).all()
-    return render_template('topics/new_post.html', form=form, title='新帖子', topics=topics, search=SearchForm())
+    return render_template('topics/new_post.html', form=form, topics=topics, search=SearchForm())
 
 
 @main.route('/delete-post/<id>')
@@ -292,7 +281,7 @@ def new_post():
 def delete_post(id):
     '''删除帖子'''
     p = Post.query.get_or_404(id)
-    topic = Topic.query.filter_by(id=p.tpoic).first().topic
+    topic = p.post_topic.topic
     user = User.query.filter_by(id=p.author).first()
     if user.is_self(current_user):
         db.session.delete(p)
@@ -331,18 +320,18 @@ def post(id):
             db.session.add(mes)
         return redirect(url_for('main.post', id=p.id))
     p.ping()
-    topic = Topic.query.filter_by(id=p.tpoic).first().topic
     author = User.query.filter_by(id=p.author).first()
     comments = Comments.query.filter_by(post_id=p.id).all()
-    return render_template('topics/post.html', p=p, topic=topic, author=author, commentform=commentform, search=SearchForm(), comments=comments, User=User)
+    return render_template('topics/post.html', p=p, author=author, commentform=commentform, search=SearchForm(), comments=comments)
 
 
 @main.route('/topic/follow/<topic>')
 @login_required
 def follow_topic(topic):
     t = Topic.query.filter_by(topic=topic).first()
-    user = current_user
-    TopicFollows.follow(user.id, t.id)
+    if t is None:
+        abort(404)
+    current_user.follow_t(t)
     return redirect(url_for('main.topic', topic=topic))
 
 
@@ -350,7 +339,9 @@ def follow_topic(topic):
 @login_required
 def unfollow_topic(topic):
     t = Topic.query.filter_by(topic=topic).first()
-    TopicFollows.unfollow(current_user.id, t.id)
+    if t is None:
+        abort(404)
+    current_user.unfollow_t(t)
     return redirect(url_for('main.topic', topic=topic))
 
 

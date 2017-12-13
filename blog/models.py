@@ -10,6 +10,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +33,17 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.String(64), default='dafulte.png')
     noread_messages = db.Column(db.Integer, index=True, default=0)
     admin = db.Column(db.Boolean(), default=False)
+    # 关系
+    followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref(
+        'follower', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
+    followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], backref=db.backref(
+        'followed', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
+    topic = db.relationship('Topic', backref='topic_author', lazy='dynamic')
+    post = db.relationship('Post', backref='post_author', lazy='dynamic')
+    follow_topic = db.relationship('Topic', backref=db.backref(
+        'follow_topic', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
+    comments = db.relationship(
+        'Comments', backref='comment_author', lazy='dynamic')
 
     @property
     def password(self):
@@ -48,57 +68,44 @@ class User(UserMixin, db.Model):
     def is_self(self, current_user):
         return current_user.is_authenticated and self.id == current_user.id
 
-    def follow(self, followed):
-        f = Follow(follower_id=self.id, followed_id=followed.id)
-        db.session.add(f)
+    def follow(self, user):
+        if not self.is_follow(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
 
-    def unfollow(self, followed):
-        f = Follow.query.filter_by(
-            follower_id=self.id, followed_id=followed.id).first()
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
         if f:
             db.session.delete(f)
 
     def all_follow(self):
-        return Follow.query.filter_by(follower_id=self.id).all()
+        return self.followed.all()
 
     def all_follower(self):
-        return Follow.query.filter_by(followed_id=self.id).all()
+        return self.followers.all()
 
     def is_follow(self, user):
-        return Follow.query.filter_by(follower_id=self.id, followed_id=user.id).first()
+        return self.followed.filter_by(followed_id=user.id).first() is not None
 
-    # def read_message(self):
-    #     self.noread_messages -= 1
-    #     db.session.add(self)
+    def follow_t(self, topic):
+        if not self.is_follow(topic):
+            f = TopicFollows(user_id=self, topic_id=topic)
+            db.session.add(f)
 
+    def unfollow_t(self, topic):
+        f = self.follow_topic.filter_by(topic_id=tpoic).first()
+        if f:
+            db.session.delete(f)
 
-class Follow(db.Model):
-    __tablename__ = 'follows'
-    follower_id = db.Column(db.Integer, primary_key=True)
-    followed_id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
-
-
-class Topic(db.Model):
-    __tablename__ = 'topics'
-    id = db.Column(db.Integer, primary_key=True)
-    topic = db.Column(db.String(64), unique=True, index=True)
-    info = db.Column(db.Text())
-    img = db.Column(db.String(64))
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
-    clink = db.Column(db.Integer, default=1)
-    author = db.Column(db.Integer, index=True)
-
-    def ping(self):
-        self.clink += 1
-        db.session.add(self)
+    def is_follow_t(self, topic):
+        return self.follow_topic.filter_by(follow_topic=topic).first() is not None
 
 
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.Integer, index=True)
-    tpoic = db.Column(db.Integer, index=True)
+    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    tpoic = db.Column(db.Integer, db.ForeignKey('topics.id'), index=True)
     timestamp = db.Column(db.DateTime(), default=datetime.now)
     clink = db.Column(db.Integer, default=1)
     head = db.Column(db.String(64))
@@ -109,29 +116,36 @@ class Post(db.Model):
         db.session.add(self)
 
 
+class Topic(db.Model):
+    __tablename__ = 'topics'
+    id = db.Column(db.Integer, primary_key=True)
+    topic = db.Column(db.String(64), unique=True, index=True)
+    info = db.Column(db.Text())
+    img = db.Column(db.String(64))
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    clink = db.Column(db.Integer, default=1)
+    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    posts = db.relationship('Post', foreign_keys=[
+                            Post.tpoic], backref='post_topic', lazy='dynamic')
+
+    def ping(self):
+        self.clink += 1
+        db.session.add(self)
+
+
 class TopicFollows(db.Model):
     __tablename__ = 'topicfollows'
-    user_id = db.Column(db.Integer, primary_key=True)
-    topic_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id'), primary_key=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey(
+        'topics.id'), primary_key=True)
     timestamp = db.Column(db.DateTime(), default=datetime.now)
-
-    def follow(user, topic):
-        f = TopicFollows(user_id=user, topic_id=topic)
-        db.session.add(f)
-
-    def unfollow(user, topic):
-        f = TopicFollows.query.filter_by(user_id=user, topic_id=topic).first()
-        if f:
-            db.session.delete(f)
-
-    def is_follow(user, topic):
-        return TopicFollows.query.filter_by(user_id=user, topic_id=topic).first()
 
 
 class Comments(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.Integer, index=True)
+    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     post_id = db.Column(db.Integer, index=True, nullable=True)
     post_author_id = db.Column(db.Integer, index=True)
     comment_id = db.Column(db.Integer, index=True, nullable=True)
@@ -151,7 +165,7 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     q_author_id = db.Column(db.Integer, index=True)
     q_id = db.Column(db.Integer, index=True)
-    author = db.Column(db.Integer, index=True)
+    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     app = db.Column(db.Integer, default=0)
     opp = db.Column(db.Integer, default=0)
     adopt = db.Column(db.Boolean(), default=False)
@@ -170,7 +184,7 @@ class Answer(db.Model):
 class Question(db.Model):
     __tablename__ = 'questions'
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.Integer, index=True)
+    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     clink = db.Column(db.Integer, default=0)
     reply = db.Column(db.Integer, default=0)
     answer = db.Column(db.Integer)
@@ -194,10 +208,11 @@ db.event.listen(Answer.q_id, 'set', Question.changde_reply)
 class Messages(db.Model):
     __tablename__ = 'messages'
     id = db.Column(db.Integer, primary_key=True)
-    the_id = db.Column(db.Integer, index=True)
-    from_id = db.Column(db.Integer, index=True)
+    the_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    from_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     post_id = db.Column(db.Integer, index=True, nullable=True)
-    post_author_id = db.Column(db.Integer, index=True, nullable=True)
+    post_author_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id'), index=True, nullable=True)
     comment_id = db.Column(db.Integer, index=True, nullable=True)
     q_id = db.Column(db.Integer, index=True, nullable=True)
     q_author_id = db.Column(db.Integer, index=True, nullable=True)
