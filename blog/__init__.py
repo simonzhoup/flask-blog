@@ -33,4 +33,7 @@ def create_blog(config_name):
     from .auth import auth as auth_buleprint
     blog.register_blueprint(auth_buleprint, url_prefix='/auth')
 
+    from .manage import manage as manage_buleprint
+    blog.register_blueprint(manage_buleprint, url_prefix='/manage')
+
     return blog

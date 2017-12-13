@@ -1,8 +1,19 @@
 from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin, current_user, AnonymousUserMixin
 from datetime import datetime
 from sqlalchemy import and_, or_
+from flask import abort
+from functools import wraps
+
+
+def admin_required(f):
+    @wraps(f)
+    def warpper(*args, **kw):
+        if not current_user.is_admin():
+            abort(404)
+        return f(*args, **kw)
+    return warpper
 
 
 @login_manager.user_loader
@@ -32,7 +43,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.now)
     avatar = db.Column(db.String(64), default='dafulte.png')
     noread_messages = db.Column(db.Integer, index=True, default=0)
-    admin = db.Column(db.Boolean(), default=False)
+    administrator = db.Column(db.Boolean(), default=False)
     # 关系
     followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref(
         'follower', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
@@ -64,6 +75,9 @@ class User(UserMixin, db.Model):
         if User.query.count() == 1:
             self.admin = True
             db.session.add(self)
+
+    def is_admin(self):
+        return self.administrator
 
     def is_self(self, current_user):
         return current_user.is_authenticated and self.id == current_user.id
@@ -99,6 +113,19 @@ class User(UserMixin, db.Model):
 
     def is_follow_t(self, topic):
         return self.follow_topic.filter_by(follow_topic=topic).first() is not None
+
+
+class AnonymousUser(AnonymousUserMixin):
+    '''匿名用户的检查方法'''
+
+    def is_admin(self):
+        return False
+
+    def is_self(self, user):
+        return False
+
+
+login_manager.anonymous_user = AnonymousUser
 
 
 class Post(db.Model):
