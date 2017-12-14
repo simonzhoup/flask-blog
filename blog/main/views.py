@@ -32,7 +32,7 @@ def before_request():
     if not current_user.is_ban():
         abort(404)
     elif search.validate_on_submit():
-        s = search.s.data
+        s = search.key1.data
         # return Search(s)
         return redirect(url_for('main.Searchs', xxx=s))
     elif current_user.is_authenticated:
@@ -100,7 +100,7 @@ def home():
 @main.route('/user/<id>')
 def user_index(id):
     user = User.query.get_or_404(id)
-    if user.ban:
+    if not user.ban:
         abort(404)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
@@ -226,7 +226,7 @@ def user_unfollow(id):
 
 @main.route('/topics', methods=['GET', 'POST'])
 def topics():
-    topics = Topic.query.all()
+    topics = Topic.query.filter_by(activation=True).all()
     form = TopicForm()
     if current_user.is_authenticated and form.validate_on_submit():
         t = Topic(topic=form.topic_name.data,
@@ -246,7 +246,7 @@ def topics():
 def topic(topic):
     form = EditTopic()
     t = Topic.query.filter_by(topic=topic).first()
-    if not t:
+    if not t or not t.activation:
         abort(404)
     if form.validate_on_submit():
         t.info = form.topic_info.data

@@ -66,7 +66,7 @@ class CommentForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    s = StringField('', validators=[Length(1, 64)])
+    key1 = StringField('', validators=[Length(1, 64)])
     submit = SubmitField('搜索')
 
 
@@ -74,3 +74,8 @@ class AskForm(FlaskForm):
     title = StringField('标题', validators=[Required(), Length(1, 64)])
     body = TextAreaField('问题描述', validators=[Required()])
     submit1 = SubmitField('提交')
+
+
+class ManageSearch(FlaskForm):
+    key = StringField('', validators=[Length(1, 64)])
+    submit = SubmitField('搜索')

@@ -7,7 +7,7 @@
 {% endblock %}
 <style type="text/css">
 	.panel {
-		margin: 10px 10px 10px 10px;
+		margin: 20px 20px 20px 20px;
 	}
 	.panel-body {
 		padding: 5 5 5 5;
@@ -60,11 +60,6 @@
 				            </div>
 				            <div class="modal-footer">
 				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-				                {% if not user.ban %}
-				                <button type="button" class="btn btn-danger">屏蔽此用户</button>
-				                {% else %}
-				                <button type="button" class="btn btn-danger">解除屏蔽</button>
-				                {% endif %}
 				            </div>
 				        </div><!-- /.modal-content -->
 				    </div><!-- /.modal -->
@@ -117,11 +112,6 @@
 				            </div>
 				            <div class="modal-footer">
 				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-				                {% if not post.ban %}
-				                <button type="button" class="btn btn-danger">屏蔽此文章</button>
-				                {% else %}
-				                <button type="button" class="btn btn-danger">解除屏蔽</button>
-				                {% endif %}
 				            </div>
 				        </div><!-- /.modal-content -->
 				    </div><!-- /.modal -->
@@ -174,7 +164,6 @@
 				            </div>
 				            <div class="modal-footer">
 				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-				                <button type="button" class="btn btn-danger">屏蔽此问题</button>
 				            </div>
 				        </div><!-- /.modal-content -->
 				    </div><!-- /.modal -->
@@ -224,7 +213,6 @@
 				            </div>
 				            <div class="modal-footer">
 				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-				                <button type="button" class="btn btn-danger">屏蔽此评论</button>
 				            </div>
 				        </div><!-- /.modal-content -->
 				    </div><!-- /.modal -->

@@ -146,7 +146,7 @@ class Post(db.Model):
     clink = db.Column(db.Integer, default=1)
     head = db.Column(db.String(64))
     body = db.Column(db.Text())
-    ban = db.Column(db.Boolean(), default=False)
+    activation = db.Column(db.Boolean(), default=True)
 
     def ping(self):
         self.clink += 1
@@ -162,6 +162,7 @@ class Topic(db.Model):
     timestamp = db.Column(db.DateTime(), default=datetime.now)
     clink = db.Column(db.Integer, default=1)
     author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    activation = db.Column(db.Boolean(), default=True)
     posts = db.relationship('Post', foreign_keys=[
                             Post.tpoic], backref='post_topic', lazy='dynamic')
 
@@ -190,6 +191,7 @@ class Comments(db.Model):
     body_html = db.Column(db.Text())
     read = db.Column(db.Boolean(), default=False)
     timestamp = db.Column(db.DateTime(), default=datetime.now)
+    activation = db.Column(db.Boolean(), default=True)
 
     def read_comment(self):
         self.read = True
@@ -208,6 +210,7 @@ class Answer(db.Model):
     adopt = db.Column(db.Boolean(), default=False)
     body = db.Column(db.Text())
     timestamp = db.Column(db.DateTime(), default=datetime.now)
+    activation = db.Column(db.Boolean(), default=True)
 
     def up(self):
         self.app += 1
@@ -228,6 +231,7 @@ class Question(db.Model):
     title = db.Column(db.Text())
     body = db.Column(db.Text())
     timestamp = db.Column(db.DateTime(), default=datetime.now)
+    activation = db.Column(db.Boolean(), default=True)
 
     @staticmethod
     def changde_reply(target, value, oldvalue, initiator):

@@ -84,7 +84,16 @@
                 <div class="navbar-form navbar-right" role="search">
                     {{ wtf.quick_form(search) }}
                 </div>
-            </div>
+                <script>
+                document.getElementById("submit").style.display="none";
+                document.onkeydown = function(){
+                    if(event.keyCode==13)
+                    {
+                        document.getElementById("submit").click();   
+                    }
+                };
+                </script>
+                </div>
         </div><!--end nav container-->
     </nav><!--end nav-->
     {% endblock %}
@@ -149,7 +158,7 @@
 
 {% block scripts %}
 <script type="text/javascript">
-document.getElementById("s").setAttribute("placeholder","输入关键字");
+document.getElementById("key1").setAttribute("placeholder","输入关键字");
 </script>
 <script src="{{ url_for('static',filename='js/particles.js') }}"></script>
 <script src="{{ url_for('static',filename='js/app.js') }}"></script>

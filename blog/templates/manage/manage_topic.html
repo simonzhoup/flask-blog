@@ -3,7 +3,7 @@
 {% block head %}
 {{ super() }}
 {% block title %}
-<title>用户管理 -- 后台管理 -- 围脖blog</title>
+<title>主题管理 -- 后台管理 -- 围脖blog</title>
 {% endblock %}
 <style type="text/css">
     .panel {
@@ -16,6 +16,14 @@
     .checkbox {
         margin: 0 0 0 0;
     }
+    #search {
+        position: absolute; 
+        top: 40px;
+
+    }
+    .table {
+        margin-top: 40px;
+    }
 </style>
 
 
@@ -27,73 +35,85 @@
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title center-block">
-        用户管理 / {% if ids == 'n' %}正常用户{% elif ids == 'd' %}屏蔽用户{% endif %}
+        主题管理 / {% if ids == 'n' %}正常主题{% elif ids == 'd' %}屏蔽主题{% elif ids == 's' %}搜索结果{% endif %}
         </h3>
     </div>
     <div class="panel-body table-responsive">
+        <div class="pull-left" id="search">
+            {{ wtf.quick_form(s) }}
+        </div>
+        <script>
+        document.getElementById("key").setAttribute("placeholder","输入关键字");
+        document.getElementById("submit").style.display="none";
+        document.onkeydown = function(){
+            if(event.keyCode==13)
+            {
+                document.getElementById("submit").click();   
+            }
+        };
+        </script>
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th style="width: 8px;"></th>
                     <th>ID</th>
-                    <th>用户名</th>
-                    <th>邮箱</th>
-                    <th>真实姓名</th>
-                    <th>状态</th>
-                    <th>最后登录</th>
-                    <th>文章</th>
-                    <th>提问</th>
+                    <th>主题名</th>
+                    <th>创建者</th>
+                    <th>创建时间</th>
+                    <th>激活</th>
+                    <th>点击量</th>
+                    <th>附属文章</th>
+                    <th>详情</th>
                 </tr>
             </thead>
                 <tbody>
                 <p hidden="hidden" id="for">
-                {% for user in users %}</p>
+                {% for topic in topics %}</p>
                 <tr>
                     <td>
                     <div class="checkbox">
-                        <label><input name="checkbox" type="checkbox" id="checkbox" value="{{ user.username }}"></label>
+                        <label><input name="checkbox" type="checkbox" id="checkbox" value="{{ topic.id }}"></label>
                     </div>
                     </td>
-                    <td>{{ user.id }}</td>  
-                    <td><a href="#user1" data-toggle="modal" data-target="#{{ user.username }}">{{ user.username }}</a></td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.ban }}</td>
+                    <td>{{ topic.id }}</td>
+                    <td>{{ topic.topic }}</td>  
+                    <td>{{ topic.topic_author.username }}</td>
                     <td>
                         <script>
-                        var weekday = moment('{{ user.last_seen }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+                        var weekday = moment('{{ topic.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
                         document.write(weekday);
                         </script>                   
                     </td>
-                    <td>{{ user.post.count() }}</td>
-                    <td>{{ user.question.count() }}</td>
+                    <td>{{ topic.activation }}</td>
+                    <td>{{ topic.clink }}</td>
+                    <td>{{ topic.posts.count() }}</td>
+                    <td><a href="#" data-toggle="modal" data-target="#topic{{ topic.id }}">查看</a></td>
                 </tr>
-                <div class="modal fade" id="{{ user.username }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal fade" id="topic{{ topic.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="myModalLabel">{{ user.username }}</h4>
+                                <h4 class="modal-title" id="myModalLabel">{{ topic.topic }}</h4>
                             </div>
                             <div class="modal-body">
-                            <p>用户名：{{ user.username }}</p>
-                            <p>真实姓名： {{ user.username }}</p>
-                            <p>注册时间: {{ user.member_since }}</p>
-                            <p>最后登录时间： {{ user.last_seen }}</p>
-                            <p>状态： {{ user.ban }}</p>
+                            <p>图片：<img src="{{ url_for('static',filename='topics/'+topic.img) }}" class="img-circle center-block" style="width: 100px;height: 100px;">
+                            </p>
+                            <p>主题描述:<br /> {{ topic.info|striptags }}</p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                             </div>
                         </div><!-- /.modal-content -->
                     </div><!-- /.modal -->
-                </div>                {% endfor %}
+                </div>
+                {% endfor %}
             </tbody>
         </table>
         {% if ids == 'n' %}  
-        <button type="button" class="btn btn-danger" id="b1">加入黑名单</button>  
+        <button type="button" class="btn btn-danger" id="b1">屏蔽主题</button>  
         {% elif ids == 'd' %}       
-        <button type="button" class="btn btn-danger" id="b2">解除黑名单</button>  
+        <button type="button" class="btn btn-danger" id="b2">解除屏蔽</button>  
         {% endif %}
     </div>
 </div>
@@ -105,7 +125,7 @@
                 id_array.push($(this).val());//向数组中添加元素  
             });  
             var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
-            $.get('{{ url_for("manage.delete_user") }}', {'ids': idstr});
+            $.get('{{ url_for("manage.delete_topic") }}', {'ids': idstr});
             location.reload();
         });
 
@@ -115,7 +135,7 @@
                 id_array.push($(this).val());//向数组中添加元素  
             });  
             var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
-            $.get('{{ url_for("manage.undelete_user") }}', {'ids': idstr});
+            $.get('{{ url_for("manage.undelete_topic") }}', {'ids': idstr});
             location.reload();
         });
 </script>
