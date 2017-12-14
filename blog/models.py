@@ -44,6 +44,7 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.String(64), default='dafulte.png')
     noread_messages = db.Column(db.Integer, index=True, default=0)
     administrator = db.Column(db.Boolean(), default=False)
+    ban = db.Column(db.Boolean(), default=False)
     # 关系
     followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref(
         'follower', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
@@ -55,6 +56,8 @@ class User(UserMixin, db.Model):
         'follow_topic', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
     comments = db.relationship(
         'Comments', backref='comment_author', lazy='dynamic')
+    question = db.relationship(
+        'Question', backref='q_author', lazy='dynamic')
 
     @property
     def password(self):
@@ -75,6 +78,9 @@ class User(UserMixin, db.Model):
         if User.query.count() == 1:
             self.admin = True
             db.session.add(self)
+
+    def is_ban(self):
+        return self.ban
 
     def is_admin(self):
         return self.administrator
@@ -124,6 +130,9 @@ class AnonymousUser(AnonymousUserMixin):
     def is_self(self, user):
         return False
 
+    def is_ban(self):
+        return True
+
 
 login_manager.anonymous_user = AnonymousUser
 
@@ -137,6 +146,7 @@ class Post(db.Model):
     clink = db.Column(db.Integer, default=1)
     head = db.Column(db.String(64))
     body = db.Column(db.Text())
+    ban = db.Column(db.Boolean(), default=False)
 
     def ping(self):
         self.clink += 1
@@ -148,7 +158,7 @@ class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic = db.Column(db.String(64), unique=True, index=True)
     info = db.Column(db.Text())
-    img = db.Column(db.String(64))
+    img = db.Column(db.String(64), nullable=True)
     timestamp = db.Column(db.DateTime(), default=datetime.now)
     clink = db.Column(db.Integer, default=1)
     author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)

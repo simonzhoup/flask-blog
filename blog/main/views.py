@@ -29,7 +29,9 @@ def Searchs(xxx):
 @main.before_app_request
 def before_request():
     search = SearchForm()
-    if search.validate_on_submit():
+    if not current_user.is_ban():
+        abort(404)
+    elif search.validate_on_submit():
         s = search.s.data
         # return Search(s)
         return redirect(url_for('main.Searchs', xxx=s))
@@ -98,9 +100,11 @@ def home():
 @main.route('/user/<id>')
 def user_index(id):
     user = User.query.get_or_404(id)
+    if user.ban:
+        abort(404)
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
-    show = request.cookies.get('show', '')
+    show = request.cookies.get('show', '1')
     if show == '1':
         q = Post
     elif show == '2':
@@ -226,13 +230,13 @@ def topics():
     form = TopicForm()
     if current_user.is_authenticated and form.validate_on_submit():
         t = Topic(topic=form.topic_name.data,
-                  info=form.topic_info.data, author=current_user)
+                  info=form.topic_info.data, author=current_user.id)
         db.session.add(t)
         img = form.topic_img.data
         img.save('blog/static/topics/%s.jpg' % form.topic_name.data)
         t.img = '%s.jpg' % form.topic_name.data
         db.session.add(t)
-        return redirect(url_for('main.topics', form=form, topics=topics))
+        return redirect(url_for('main.topics'))
     return render_template('topics/topics.html', form=form, topics=topics, search=SearchForm(), Post=Post)
 
 # 话题

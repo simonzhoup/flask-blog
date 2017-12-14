@@ -1,0 +1,240 @@
+{% extends "manage/index.html" %}
+
+{% block head %}
+{{ super() }}
+{% block title %}
+<title>网站动态 -- 后台管理 -- 围脖blog</title>
+{% endblock %}
+<style type="text/css">
+	.panel {
+		margin: 10px 10px 10px 10px;
+	}
+	.panel-body {
+		padding: 5 5 5 5;
+		/*background-color: #E0E0E0;*/
+	}
+</style>
+{% endblock %}
+
+
+{% block row %}
+
+<div class="panel panel-primary col-sm-5">
+    <div class="panel-heading">
+    	<h3 class="panel-title center-block">
+        最近登录用户
+        </h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered">
+			<thead>
+				<tr>
+				  <th>用户名</th>
+				  <th>登录时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+				<tr>
+				  <td><a href="#user1" data-toggle="modal" data-target="#{{ user.username }}">{{ user.username }}</a></td>
+				  <td>
+				  		<script>
+						var weekday = moment('{{ user.last_seen }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						document.write(weekday);
+						</script>					
+					</td>
+				</tr>
+				<div class="modal fade" id="{{ user.username }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				                <h4 class="modal-title" id="myModalLabel">{{ user.username }}</h4>
+				            </div>
+				            <div class="modal-body">
+				            <p>用户名：{{ user.username }}</p>
+				            <p>真实姓名： {{ user.username }}</p>
+				            <p>注册时间: {{ user.member_since }}</p>
+				            <p>最后登录时间： {{ user.last_seen }}</p>
+				            <p>状态： {{ user.ban }}</p>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				                {% if not user.ban %}
+				                <button type="button" class="btn btn-danger">屏蔽此用户</button>
+				                {% else %}
+				                <button type="button" class="btn btn-danger">解除屏蔽</button>
+				                {% endif %}
+				            </div>
+				        </div><!-- /.modal-content -->
+				    </div><!-- /.modal -->
+				</div>
+				{% endfor %}
+			</tbody>
+		</table>        	
+    </div>
+</div>
+
+<div class="panel panel-primary col-sm-5">
+    <div class="panel-heading">
+    	<h3 class="panel-title center-block">
+        新文章
+        </h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered">
+			<thead>
+				<thead>
+					<tr>
+					  <th>作者</th>
+					  <th>发表时间</th>
+					</tr>
+				</thead>
+				{% for post in posts %}
+				<tr>
+				  <td><a href="#user1" data-toggle="modal" data-target="#post{{ post.id }}">{{ post.post_author.username }}</a></td>
+				  <td>
+				  		<script>
+						var weekday = moment('{{ post.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						document.write(weekday);
+						</script>					
+					</td>
+				</tr>
+				<div class="modal fade" id="post{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				                <h4 class="modal-title" id="myModalLabel">{{ post.head }}</h4>
+				            </div>
+				            <div class="modal-body">
+				            <p>文章标题：{{ post.head }}</p>
+				            <p>文章所属主题： {{ post.post_topic.topic }}</p>
+				            <p>文章摘要: {{ (post.body|striptags)[:40] }} ......</p>
+				            <p>发表时间: {{ post.timestamp }}</p>
+				            <p>点击数： {{ post.clink }}</p>
+				            <p>评论数： {{ Comments.query.filter_by(post_id=post.id).count() }}</p>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				                {% if not post.ban %}
+				                <button type="button" class="btn btn-danger">屏蔽此文章</button>
+				                {% else %}
+				                <button type="button" class="btn btn-danger">解除屏蔽</button>
+				                {% endif %}
+				            </div>
+				        </div><!-- /.modal-content -->
+				    </div><!-- /.modal -->
+				</div>
+				{% endfor %}
+			</tbody>
+		</table>        	
+    </div>
+</div>
+
+<div class="panel panel-primary col-sm-5">
+    <div class="panel-heading">
+    	<h3 class="panel-title center-block">
+        新问题
+        </h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered">
+			<thead>
+				<tr>
+				  <th>提问者</th>
+				  <th>发布时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for q in questions %}
+				<tr>
+				  <td><a href="#user1" data-toggle="modal" data-target="#question{{ q.id }}">{{ q.q_author.username }}</a></td>
+				  <td>
+				  		<script>
+						var weekday = moment('{{ q.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						document.write(weekday);
+						</script>					
+					</td>
+				</tr>
+				<div class="modal fade" id="question{{ q.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				                <h4 class="modal-title" id="myModalLabel">{{ q.title }}</h4>
+				            </div>
+				            <div class="modal-body">
+				            <p>问题标题：{{ q.title }}</p>
+				            <p>问题内容摘要： {{ (q.body|striptags)[:40] }} ......</p>
+				            <p>发表时间: {{ q.timestamp }}</p>
+				            <p>点击数： {{ q.clink }}</p>
+				            <p>回复数： {{ q.reply }}</p>
+				            <p>最佳答案：{% if q.answer %}True{% else %}False{% endif %}
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				                <button type="button" class="btn btn-danger">屏蔽此问题</button>
+				            </div>
+				        </div><!-- /.modal-content -->
+				    </div><!-- /.modal -->
+				</div>
+				{% endfor %}
+			</tbody>
+		</table>        	
+    </div>
+</div>
+
+<div class="panel panel-primary col-sm-5">
+    <div class="panel-heading">
+    	<h3 class="panel-title center-block">
+        新评论
+        </h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered">
+			<thead>
+				<tr>
+				  <th>评论人</th>
+				  <th>发表时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for c in comments %}
+				<tr>
+				  <td><a href="#user1" data-toggle="modal" data-target="#c{{ c.id }}">{{ c.comment_author.username }}</a></td>
+				  <td>
+				  		<script>
+						var weekday = moment('{{ c.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						document.write(weekday);
+						</script>					
+					</td>
+				</tr>
+				<div class="modal fade" id="c{{ c.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				                <h4 class="modal-title" id="myModalLabel">{{ c.comment_author.username }}</h4>
+				            </div>
+				            <div class="modal-body">
+				            <p>评论人：{{ c.comment_author.username }}</p>
+				            <p>评论内容： {{ c.body }}</p>
+				            <p>发表时间: {{ c.timestamp }}</p>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				                <button type="button" class="btn btn-danger">屏蔽此评论</button>
+				            </div>
+				        </div><!-- /.modal-content -->
+				    </div><!-- /.modal -->
+				</div>
+				{% endfor %}
+			</tbody>
+		</table>        	
+    </div>
+</div>
+
+{% endblock %}
+
+

@@ -36,6 +36,7 @@
 <body>
     <div id="particles-js">
     </div>
+    {% block navbar %}
     <nav class="navbar navbar-inverse navbar-fixed-top col-md-12">
         <div class="container">
             <div class="navbar-header">
@@ -53,7 +54,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('main.ask') }}">技术问答</a></li>
                     <li><a href="{{ url_for('main.topics') }}">主题文章</a></li>
-                    <li><a href="#">后台管理</a></li>
+                    <li><a href="{{ url_for('manage.index') }}">后台管理</a></li>
                 </ul>
                 
                 {% if current_user.is_authenticated %}
@@ -86,6 +87,7 @@
             </div>
         </div><!--end nav container-->
     </nav><!--end nav-->
+    {% endblock %}
 
     {% block content %}
     <div id="warp">

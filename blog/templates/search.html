@@ -41,7 +41,7 @@
 					<button type="button" class="btn btn-default btn-xs" id="time">
 					<span class="glyphicon glyphicon-time"></span>
 						<script>
-						var weekday = moment('{{ p.timestamp }}').zone(8).locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
+						var weekday = moment('{{ p.timestamp }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
 						document.write(weekday);
 						</script>					
 					</button>
