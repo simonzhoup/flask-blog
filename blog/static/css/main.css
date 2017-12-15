@@ -121,3 +121,17 @@ canvas {
 #postbody {
 	height: 400px;
 }
+.post-body {
+  display:-webkit-box;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient:vertical;
+  line-height:24px;
+  letter-spacing:2px;  
+  font-size: 18px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 10px;
+  color: #383838;
+}

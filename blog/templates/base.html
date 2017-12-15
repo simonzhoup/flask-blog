@@ -101,10 +101,26 @@
     {% block content %}
     <div id="warp">
     <div class="container">
-        <div class="row">
+        <div class="row" >
         {% block inside_row %}
-            <div class="col-lg-3" id="left" style="width: 280px;height: 240px;">
-                {% block left %}{% endblock %}
+            <div class="col-lg-3" id="left">
+                {% block left %}
+                    {% if current_user.is_authenticated %}
+                    {% include '_user_left.html' %}
+                    {% else %}
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                每日一句
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
+                            你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endblock %}
             </div>
             <div class="clearfix visible-xs"></div>
             <!--left: user info-->

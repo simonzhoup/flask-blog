@@ -2,25 +2,25 @@
 <div class="panel panel-default">
 	<div class="panel-body">
 		<div class="row">
-			<div class="col-xs-5">
-				<img src="{{ url_for('static',filename='user/avatar/'+current_user.avatar) }}" class="img-circle" style="width: 80px;height: 80px;"></div>
-			<div class="col-xs-7">
-				<p class="user-name">{{ current_user.username }}</p>
+			<div class="col-xs-12">
+				<img src="{{ url_for('static',filename='user/avatar/'+current_user.avatar) }}" class="img-circle center-block" style="width: 80px;height: 80px;"></div>
+			<div class="col-xs-12" style="margin-top: 10px;">
+				<p class="user-name text-center">{{ current_user.username }}</p>
 				{% if current_user.abortme %}
-				<p class="user-about">{{ current_user.abortme }}</p>
+				<p class="user-about text-center">{{ current_user.abortme }}</p>
 				{% endif %}
 			</div>
 		</div>
-		<div class="row" style="margin-top: 15px;">
-			<ul class="nav nav-pills" style="padding-left: 15px;">
-			<li col-xs-4>
-				<a href="{{ url_for('main.user_index',id=current_user.id) }}" data-toggle="tooltip"  title="主页"><img src="{{ url_for('static',filename='icon/home-icon.png') }}" style="height: 40px;width: 40px;"></a> 
+		<div class="row" style="margin: 0 0 0 0;">
+			<ul class="nav nav-pills">
+			<li class="col-xs-4" style="margin: 0 0 0 0;">
+				<a href="{{ url_for('main.user_index',id=current_user.id) }}" data-toggle="tooltip"  title="主页"><img src="{{ url_for('static',filename='icon/home-icon.png') }}" class="center-block" style="height: 30px;width: 30px;"></a> 
 			</li>
-			<li col-xs-4>
-				<a href="{{ url_for('main.user_seting') }}" data-toggle="tooltip"  title="设置"><img src="{{ url_for('static',filename='icon/settings-3-icon.png') }}" style="height: 40px;width: 40px;"></a> 
+			<li class="col-xs-4" style="margin: 0 0 0 0;">
+				<a href="{{ url_for('main.user_seting') }}" data-toggle="tooltip"  title="设置"><img src="{{ url_for('static',filename='icon/settings-3-icon.png') }}" class="center-block" style="height: 30px;width: 30px;"></a> 
 			</li>
-			<li col-xs-4>
-				<a href="{{ url_for('auth.user_logout') }}" data-toggle="tooltip"  title="登出"><img src="{{ url_for('static',filename='icon/close-icon.png') }}" style="height: 40px;width: 40px;"></a> 
+			<li class="col-xs-4" style="margin: 0 0 0 0;">
+				<a href="{{ url_for('auth.user_logout') }}" data-toggle="tooltip"  title="登出"><img src="{{ url_for('static',filename='icon/close-icon.png') }}" class="center-block" style="height: 30px;width: 30px;"></a> 
 			</li>
 			</ul>
 		</div>

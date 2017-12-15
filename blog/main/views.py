@@ -91,8 +91,9 @@ def user_seting():
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
-
-    return render_template('home.html', user=current_user, search=SearchForm())
+    posts = Post.query.order_by(Post.timestamp).limit(5).all()
+    questions = Question.query.order_by(Question.timestamp).limit(5).all()
+    return render_template('home.html', user=current_user, search=SearchForm(), posts=posts[::-1], questions=questions[::-1])
 
 # 用户主页
 

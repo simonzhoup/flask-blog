@@ -2,34 +2,36 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block left %}
-{% if current_user.is_authenticated %}
-{% include '_user_left.html' %}
-{% else %}
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">
-			每日一句
-		</h3>
-	</div>
-	<div class="panel-body">
-		You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
-		你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
-	</div>
-</div>
-{% endif %}
+{{ super() }}
+{% include '_new_question.html' %}
 {% endblock %}
 
-
 {% block right %}
-<div class="panel panel-primary">
+{% for p in posts %}
+<div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			主页界面
+			<strong>{{ p.post_topic.topic }}</strong>
 		</h3>
 	</div>
 	<div class="panel-body">
-		You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
-		你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
+		<div class="post-head">
+		<a href="{{ url_for('main.post',id=p.id) }}"><h3 class="text-center">{{ p.head }}</h3></a>
+		<h5 class="text-center text-muted" style="margin-bottom: 20px;"><span class="glyphicon glyphicon-calendar"></span> 
+		<script>
+		var weekday = moment('{{ p.timestamp }}').locale('zh-cn').format('YYYY/MM/DD'); 
+		document.write(weekday);
+		</script>&nbsp;
+		<span class="glyphicon glyphicon-user"></span> {{ p.post_author.username }}&nbsp;
+		<span class="glyphicon glyphicon-eye-open"></span> {{ p.clink }} Views	
+		</h5>
+		</div>
+		<div class="post-body">
+		&nbsp;&nbsp;&nbsp;&nbsp;{{ (p.body|striptags) }}
+		</div>
+	</div>
+	<div class="panel-footer">
 	</div>
 </div>
+{% endfor %}
 {% endblock %}
