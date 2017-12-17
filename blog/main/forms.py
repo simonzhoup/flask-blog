@@ -67,7 +67,7 @@ class CommentForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     key1 = StringField('', validators=[Length(1, 64)])
-    submit = SubmitField('搜索')
+    search = SubmitField('搜索')
 
 
 class AskForm(FlaskForm):
@@ -78,4 +78,4 @@ class AskForm(FlaskForm):
 
 class ManageSearch(FlaskForm):
     key = StringField('', validators=[Length(1, 64)])
-    submit = SubmitField('搜索')
+    search = SubmitField('搜索')

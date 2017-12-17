@@ -233,9 +233,10 @@ def topics():
         t = Topic(topic=form.topic_name.data,
                   info=form.topic_info.data, author=current_user.id)
         db.session.add(t)
+        db.session.commit()
         img = form.topic_img.data
-        img.save('blog/static/topics/%s.jpg' % form.topic_name.data)
-        t.img = '%s.jpg' % form.topic_name.data
+        img.save('blog/static/topics/%s.jpg' % t.id)
+        t.img = '%s.jpg' % t.id
         db.session.add(t)
         return redirect(url_for('main.topics'))
     return render_template('topics/topics.html', form=form, topics=topics, search=SearchForm(), Post=Post)
