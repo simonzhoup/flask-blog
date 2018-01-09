@@ -25,3 +25,7 @@ $ python manage.py runserver
 <li>文章标题和内容支持关键字搜索</li>
 <li>简单的后台管理系统（完成中...）</li>
 <li>......</li>
+
+<br />
+<h3>其它</h3>
+<p><a>http://ocooc.cc/</a> 可以查看网站效果</p>
