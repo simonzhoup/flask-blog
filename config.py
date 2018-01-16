@@ -1,4 +1,5 @@
 import os
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -20,3 +21,6 @@ class DevelopmentConfig(Config):
 config = {
     'development': DevelopmentConfig,
 }
+
+
+

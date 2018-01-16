@@ -6,7 +6,6 @@ from ..models import User, Topic
 from flask_login import current_user
 from flask_uploads import UploadSet, IMAGES
 
-
 images = UploadSet('images', IMAGES)
 
 
@@ -31,7 +30,7 @@ class UserPasswd(FlaskForm):
 
 class Avatar(FlaskForm):
     avatar = FileField('上传头像', validators=[
-                       FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
+        FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
     submit = SubmitField('提交')
 
 
@@ -39,13 +38,14 @@ class TopicForm(FlaskForm):
     topic_name = StringField('话题名', validators=[Required(), Length(1, 64)])
     topic_info = TextAreaField('话题描述')
     topic_img = FileField('话题图片', validators=[
-                          FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
+        FileRequired(), FileAllowed(['jpg', 'png'], '只能上传图片')])
     submit1 = SubmitField('提交')
 
 
 class PostForm(FlaskForm):
     head = StringField('标题', validators=[Required(), Length(1, 64)])
     postbody = TextAreaField('内容', validators=[Required()])
+    tag = StringField('标签',render_kw={'placeholder':'标签必须以’#‘符号开头，空格结尾。可以同时添加多个标签。'})
     topic = SelectField('所属话题', coerce=int)
     submit = SubmitField('提交')
 
@@ -53,6 +53,10 @@ class PostForm(FlaskForm):
         super(PostForm, self).__init__(*args, **kwargs)
         self.topic.choices = [(t.id, t.topic)
                               for t in Topic.query.order_by(Topic.id).all()]
+
+    def validate_tag(self, field):
+        if '#' not in field.data or ' ' not in field.data:
+            raise ValidationError('标签必须以’#‘符号开头，空格结尾。')
 
 
 class EditTopic(FlaskForm):

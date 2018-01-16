@@ -1,22 +1,40 @@
-{% extends "manage/index.html" %}
+{% extends "manage/manage_base.html" %}
 
 {% block head %}
-{{ super() }}
-{% block title %}
-<title>用户管理 -- 后台管理 -- 围脖blog</title>
-{% endblock %}
-<style type="text/css">
-    .panel {
-        margin: 10px 10px 10px 10px;
-    }
-    .panel-body {
-        padding: 5 5 5 5;
-        /*background-color: #E0E0E0;*/
-    }
-    .checkbox {
-        margin: 0 0 0 0;
-    }
-</style>
+    {{ super() }}
+    {% block title %}
+        <title>用户管理 -- 后台管理 -- 围脖blog</title>
+    {% endblock %}
+    <style type="text/css">
+        .panel {
+            margin: 10px 10px 10px 10px;
+        }
+
+        .panel-body {
+            padding: 5 5 5 5;
+            /*background-color: #E0E0E0;*/
+        }
+
+        .checkbox {
+            margin: 0 0 0 0;
+        }
+
+        .form-group {
+            position: absolute;
+            top: 40px;
+
+        }
+
+        input#search {
+            position: absolute;
+            left: 250px;
+            top: 60px;
+        }
+
+        .table {
+            margin-top: 40px;
+        }
+    </style>
 
 
 {% endblock %}
@@ -24,15 +42,27 @@
 
 {% block row %}
 
-<div class="panel panel-primary">
-    <div class="panel-heading">
-        <h3 class="panel-title center-block">
-        用户管理 / {% if ids == 'n' %}正常用户{% elif ids == 'd' %}屏蔽用户{% endif %}
-        </h3>
-    </div>
-    <div class="panel-body table-responsive">
-        <table class="table table-bordered">
-            <thead>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title center-block">
+                用户管理 / {% if ids == 'n' %}正常用户{% elif ids == 'd' %}屏蔽用户{% elif ids=='s' %}搜索结果{% endif %}
+            </h3>
+        </div>
+        <div class="panel-body table-responsive">
+            <div class="pull-left" id="search">
+                {{ wtf.quick_form(s) }}
+            </div>
+            <script>
+                document.getElementById("key").setAttribute("placeholder", "输入关键字");
+                document.getElementById("submit").style.display = "none";
+                document.onkeydown = function () {
+                    if (event.keyCode == 13) {
+                        document.getElementById("submit").click();
+                    }
+                };
+            </script>
+            <table class="table table-bordered">
+                <thead>
                 <tr>
                     <th style="width: 8px;"></th>
                     <th>ID</th>
@@ -44,79 +74,83 @@
                     <th>文章</th>
                     <th>提问</th>
                 </tr>
-            </thead>
+                </thead>
                 <tbody>
                 <p hidden="hidden" id="for">
-                {% for user in users %}</p>
-                <tr>
-                    <td>
-                    <div class="checkbox">
-                        <label><input name="checkbox" type="checkbox" id="checkbox" value="{{ user.username }}"></label>
-                    </div>
-                    </td>
-                    <td>{{ user.id }}</td>  
-                    <td><a href="#user1" data-toggle="modal" data-target="#{{ user.username }}">{{ user.username }}</a></td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.ban }}</td>
-                    <td>
-                        <script>
-                        var weekday = moment('{{ user.last_seen }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'); 
-                        document.write(weekday);
-                        </script>                   
-                    </td>
-                    <td>{{ user.post.count() }}</td>
-                    <td>{{ user.question.count() }}</td>
-                </tr>
-                <div class="modal fade" id="{{ user.username }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="myModalLabel">{{ user.username }}</h4>
-                            </div>
-                            <div class="modal-body">
-                            <p>用户名：{{ user.username }}</p>
-                            <p>真实姓名： {{ user.username }}</p>
-                            <p>注册时间: {{ user.member_since }}</p>
-                            <p>最后登录时间： {{ user.last_seen }}</p>
-                            <p>状态： {{ user.ban }}</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                            </div>
-                        </div><!-- /.modal-content -->
-                    </div><!-- /.modal -->
-                </div>                {% endfor %}
-            </tbody>
-        </table>
-        {% if ids == 'n' %}  
-        <button type="button" class="btn btn-danger" id="b1">加入黑名单</button>  
-        {% elif ids == 'd' %}       
-        <button type="button" class="btn btn-danger" id="b2">解除黑名单</button>  
-        {% endif %}
+                    {% for user in users %}</p>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label><input name="checkbox" type="checkbox" id="checkbox"
+                                                  value="{{ user.username }}"></label>
+                                </div>
+                            </td>
+                            <td>{{ user.id }}</td>
+                            <td><a href="#user1" data-toggle="modal"
+                                   data-target="#{{ user.username }}">{{ user.username }}</a></td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.ban }}</td>
+                            <td>
+                                <script>
+                                    var weekday = moment('{{ user.last_seen }}').locale('zh-cn').format('YYYY-MM-DD HH:mm:ss');
+                                    document.write(weekday);
+                                </script>
+                            </td>
+                            <td>{{ user.post.count() }}</td>
+                            <td>{{ user.question.count() }}</td>
+                        </tr>
+                        <div class="modal fade" id="{{ user.username }}" tabindex="-1" role="dialog"
+                             aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"
+                                                aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title" id="myModalLabel">{{ user.username }}</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>用户名：{{ user.username }}</p>
+                                        <p>真实姓名： {{ user.username }}</p>
+                                        <p>注册时间: {{ user.member_since }}</p>
+                                        <p>最后登录时间： {{ user.last_seen }}</p>
+                                        <p>状态： {{ user.ban }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal -->
+                        </div>                {% endfor %}
+                </tbody>
+            </table>
+            {% if ids == 'n' %}
+                <button type="button" class="btn btn-danger" id="b1">加入黑名单</button>
+            {% elif ids == 'd' %}
+                <button type="button" class="btn btn-danger" id="b2">解除黑名单</button>
+            {% endif %}
+        </div>
     </div>
-</div>
-<script type="text/javascript">
+    <script type="text/javascript">
         //方法1
-        $("#b1").click(function(){
-            var id_array=new Array();  
-            $('input[name="checkbox"]:checked').each(function(){  
+        $("#b1").click(function () {
+            var id_array = new Array();
+            $('input[name="checkbox"]:checked').each(function () {
                 id_array.push($(this).val());//向数组中添加元素  
-            });  
-            var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+            });
+            var idstr = id_array.join(',');//将数组元素连接起来以构建一个字符串
             $.get('{{ url_for("manage.delete_user") }}', {'ids': idstr});
             location.reload();
         });
 
-        $("#b2").click(function(){
-            var id_array=new Array();  
-            $('input[name="checkbox"]:checked').each(function(){  
+        $("#b2").click(function () {
+            var id_array = new Array();
+            $('input[name="checkbox"]:checked').each(function () {
                 id_array.push($(this).val());//向数组中添加元素  
-            });  
-            var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+            });
+            var idstr = id_array.join(',');//将数组元素连接起来以构建一个字符串
             $.get('{{ url_for("manage.undelete_user") }}', {'ids': idstr});
             location.reload();
         });
-</script>
+    </script>
 {% endblock %}

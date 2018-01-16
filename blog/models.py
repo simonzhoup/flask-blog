@@ -137,22 +137,6 @@ class AnonymousUser(AnonymousUserMixin):
 login_manager.anonymous_user = AnonymousUser
 
 
-class Post(db.Model):
-    __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
-    tpoic = db.Column(db.Integer, db.ForeignKey('topics.id'), index=True)
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
-    clink = db.Column(db.Integer, default=1)
-    head = db.Column(db.String(64))
-    body = db.Column(db.Text())
-    activation = db.Column(db.Boolean(), default=True)
-
-    def ping(self):
-        self.clink += 1
-        db.session.add(self)
-
-
 class Topic(db.Model):
     __tablename__ = 'topics'
     id = db.Column(db.Integer, primary_key=True)
@@ -163,8 +147,7 @@ class Topic(db.Model):
     clink = db.Column(db.Integer, default=1)
     author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     activation = db.Column(db.Boolean(), default=True)
-    posts = db.relationship('Post', foreign_keys=[
-                            Post.tpoic], backref='post_topic', lazy='dynamic')
+    posts = db.relationship('Post', backref='topic', lazy='dynamic')
 
     def ping(self):
         self.clink += 1
@@ -271,3 +254,36 @@ class Messages(db.Model):
         for m in ms:
             m.is_read = True
             db.session.add(m)
+
+
+class PostTag(db.Model):
+    __tablename__ = 'posttag'
+    post_id = db.Column(db.Integer, db.ForeignKey(
+        'posts.id'), primary_key=True)
+    tags_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+    id = db.Column(db.Integer, primary_key=True)
+    tag_name = db.Column(db.String(64), index=True)
+    posts = db.relationship('PostTag', foreign_keys=[
+                            PostTag.tags_id], backref=db.backref('tag', lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    tpoic = db.Column(db.Integer, db.ForeignKey('topics.id'), index=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    clink = db.Column(db.Integer, default=1)
+    head = db.Column(db.String(64))
+    body = db.Column(db.Text())
+    activation = db.Column(db.Boolean(), default=True)
+    tags = db.relationship('PostTag', foreign_keys=[
+        PostTag.post_id], backref=db.backref('post', lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
+
+    def ping(self):
+        self.clink += 1
+        db.session.add(self)

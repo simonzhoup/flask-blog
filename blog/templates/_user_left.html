@@ -42,4 +42,37 @@
 	</div>
 </div>
 
+
 {% endif %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			文章标签
+		</h3>
+	</div>
+	<div class="panel-body">
+		{% for tag in Tag.query.all() %}
+		{% set color = random.choice(['default','primary','info']) %}
+		{% set size = random.choice(['sm','xs']) %}
+		<a href="{{ url_for('main.post_for_tag',tag=tag.id)}}"><button type="button" class="btn btn-{{ color }} btn-{{ size }}">{{ tag.tag_name }}</button></a>
+		{% endfor %}
+	</div>
+</div>
+
+<div class="panel panel-primary col-lg-12">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            问答区动态
+        </h3>
+    </div>
+    <ul class="list-group">
+        {% for q in questions %}
+        <li class="list-group-item">
+            <p class="list-meta">
+            <a href="{{ url_for('main.question',id=q.id) }}">{{ q.title }}</a>
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+

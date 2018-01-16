@@ -1,53 +1,52 @@
 {% import "bootstrap/wtf.html" as wtf %}
-
 <!DOCTYPE html>
 <html>
 {% block head %}
-<head>
-	<meta charset="utf-8">
-    {% block title %}
-    <title>围脖blog</title>
-    {% endblock %}
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes"> -->
-	<link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <!-- <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet"> -->
-    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static',filename='icon/shortcut.ico') }}">
-    <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
-    <script src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
-    <script type="text/javascript">
-        $(function() {
-            $(window).scroll(function() {
-                if ($(window).scrollTop() > 800)
-                    $('div.go-top').show();
-                else
-                    $('div.go-top').hide();
+    <head>
+        <meta charset="utf-8">
+        {% block title %}
+            <title>围脖blog</title>
+        {% endblock %}
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes"> -->
+        <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <!-- <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet"> -->
+        <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+        <link rel="shortcut icon" href="{{ url_for('static',filename='icon/shortcut.ico') }}">
+        <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
+        <script src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
+        <script type="text/javascript">
+            $(function () {
+                $(window).scroll(function () {
+                    if ($(window).scrollTop() > 800)
+                        $('div.go-top').show();
+                    else
+                        $('div.go-top').hide();
+                });
+                $('#top').click(function () {
+                    $("html, body").animate({scrollTop: 0}, 800);
+                });
             });
-            $('#top').click(function() {
-                $("html, body").animate({scrollTop: 0}, 800);
-            });
-        });
-    </script>
-</head>
+        </script>
+    </head>
 {% endblock %}
 
 <body>
-    <div id="particles-js">
-    </div>
-    {% block navbar %}
+<div id="particles-js">
+</div>
+{% block navbar %}
     <nav class="navbar navbar-inverse navbar-fixed-top col-md-12">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle"
-                 data-toggle="collapse" data-target=".navbar-collapse">
+                        data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-               <a class="navbar-brand" href="{{ url_for('main.home') }}">围脖blog</a>
+                <a class="navbar-brand" href="{{ url_for('main.home') }}">围脖blog</a>
             </div>
 
             <div class="navbar-collapse collapse">
@@ -56,168 +55,173 @@
                     <li><a href="{{ url_for('main.topics') }}">主题文章</a></li>
                     <li><a href="{{ url_for('manage.index') }}">后台管理</a></li>
                 </ul>
-                
+
                 {% if current_user.is_authenticated %}
-                <div class="navbar-form navbar-right">
-                    <a class="btn btn-info" id="new-btn" href="{{ url_for('main.new_post') }}">
-                        写文章
-                    </a>
-                </div>
-                
+                    <div class="navbar-form navbar-right">
+                        <a class="btn btn-info" id="new-btn" href="{{ url_for('main.new_post') }}">
+                            写文章
+                        </a>
+                    </div>
+
                 {% else %}
-                <div class="navbar-form navbar-right">
-                    <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                      <button type="button" class="btn btn-info btn-primary dropdown-toggle" data-toggle="dropdown">
-                        登录  <b class="caret"></b>
-                      </button>
-                        <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('auth.user_login') }}">登录 </a></li>
-                        <li><a href="{{ url_for('auth.user_register') }}">注册</a></li>
-                        <li><a href="#">找回密码</a></li>
+                    <div class="navbar-form navbar-right">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <button type="button" class="btn btn-info btn-primary dropdown-toggle"
+                                        data-toggle="dropdown">
+                                    登录 <b class="caret"></b>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ url_for('auth.user_login') }}">登录 </a></li>
+                                    <li><a href="{{ url_for('auth.user_register') }}">注册</a></li>
+                                    <li><a href="#">找回密码</a></li>
+                                </ul>
+                            </li>
                         </ul>
-                    </li>
-                    </ul>
-                </div>
+                    </div>
                 {% endif %}
 
                 <div class="navbar-form navbar-right" role="search">
                     {{ wtf.quick_form(search) }}
                 </div>
-               <!--  <script>
-                document.getElementById("search").style.display="none";
-                document.onkeydown = function(){
-                    if(event.keyCode==13)
-                    {
-                        document.getElementById("search").click();   
-                    }
-                };
-                </script> -->
-                </div>
+                <!--  <script>
+                 document.getElementById("search").style.display="none";
+                 document.onkeydown = function(){
+                     if(event.keyCode==13)
+                     {
+                         document.getElementById("search").click();
+                     }
+                 };
+                 </script> -->
+            </div>
         </div><!--end nav container-->
     </nav><!--end nav-->
-    {% endblock %}
+{% endblock %}
 
-    {% block content %}
+{% block content %}
     <div id="warp">
-    <div class="container">
-        <div class="row" >
-        {% block inside_row %}
-            <div class="col-lg-3" id="left">
-                {% block left %}
-                    {% if current_user.is_authenticated %}
-                    {% include '_user_left.html' %}
-                    {% else %}
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">
-                                每日一句
-                            </h3>
-                        </div>
-                        <div class="panel-body">
-                            You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
-                            你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
-                        </div>
+        <div class="container">
+            <div class="row">
+                {% block inside_row %}
+                    <div class="col-lg-3" id="left">
+                        {% block left %}
+                            {% if current_user.is_authenticated %}
+                                {% include '_user_left.html' %}
+                            {% else %}
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            每日一句
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        You raise me up,so I can stand on mountains .You raise me up,to walk on stormy
+                                        seas. <br/><br/>
+                                        你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endblock %}
                     </div>
-                    {% endif %}
+                    <div class="clearfix visible-xs"></div>
+                    <!--left: user info-->
+                    <div class="col-lg-9" id="right">
+                        {% for message in get_flashed_messages() %}
+                            <div class="alert alert-warning">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                        {% block right %}{% endblock %}
+                    </div>
+                    <!--right: topics-->
                 {% endblock %}
             </div>
-            <div class="clearfix visible-xs"></div>
-            <!--left: user info-->
-            <div class="col-lg-9" id="right">
-                {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{ message }}
-                </div>
-                {% endfor %}            
-                {% block right %}{% endblock %}
-            </div>
-            <!--right: topics-->
-        {% endblock %}
         </div>
     </div>
-    </div>
-    {% endblock %}
+{% endblock %}
 
 {% block modal %}
     <footer id="footer">
         <div class="container clearfix">
-        <ol class="col-xs-4 breadcrumb" style="background-color: #fff;padding-top: 0px;margin-bottom: 0px;">
-        <li><a href="mailto:simonzhoup@gmail.com" style="color:#222"><span class="glyphicon glyphicon-envelope"></span></a></li>
-        <li><a href="#" style="color:#222"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModal"></span></a></li>
-        <li><a href="https://github.com/simonzhoup"><img src="{{ url_for('static',filename='icon/github.ico') }}" height="16" width="16"></a></li>
-        </ol>
-        <p class="muted credit pull-right"> copyright by simonzhoup@gmail.com</p>
+            <ol class="col-xs-4 breadcrumb" style="background-color: #fff;padding-top: 0px;margin-bottom: 0px;">
+                <li><a href="mailto:simonzhoup@gmail.com" style="color:#222"><span
+                        class="glyphicon glyphicon-envelope"></span></a></li>
+                <li><a href="#" style="color:#222"><span class="glyphicon glyphicon-qrcode" data-toggle="modal"
+                                                         data-target="#myModal"></span></a></li>
+                <li><a href="https://github.com/simonzhoup"><img
+                        src="{{ url_for('static',filename='icon/github.ico') }}" height="16" width="16"></a></li>
+            </ol>
+            <p class="muted credit pull-right"> copyright by simonzhoup@gmail.com</p>
         </div>
     </footer>
-    
+
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
-            </div> -->
-            <div class="modal-body" style="padding: 0px;">
-                <div class="col-xs-8 col-xs-offset-2">
-                <img src="{{ url_for('static',filename='icon/wechat.jpg') }}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                </div> -->
+                <div class="modal-body" style="padding: 0px;">
+                    <div class="col-xs-8 col-xs-offset-2">
+                        <img src="{{ url_for('static',filename='icon/wechat.jpg') }}">
+                    </div>
                 </div>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
     </div>
 {% endblock %}
-    <div class="go-top" id="top">
-        <p><span class="glyphicon glyphicon-plane"></span></p>
-    </div>
+<div class="go-top" id="top">
+    <p><span class="glyphicon glyphicon-plane"></span></p>
+</div>
 
 {% block scripts %}
-<script type="text/javascript">
-document.getElementById("key1").setAttribute("placeholder","输入关键字");
-</script>
-<script src="{{ url_for('static',filename='js/particles.js') }}"></script>
-<script src="{{ url_for('static',filename='js/app.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static',filename='dist/js/wangEditor.min.js') }}"></script>
-<script type="text/javascript">
-    var editor = new wangEditor('body');
+    <script type="text/javascript">
+        document.getElementById("key1").setAttribute("placeholder", "输入关键字");
+    </script>
+    <script src="{{ url_for('static',filename='js/particles.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='dist/js/wangEditor.min.js') }}"></script>
+    <script type="text/javascript">
+        var editor = new wangEditor('body');
 
-    editor.config.menus = [
-        'bold',
-        'underline',
-        'italic',
-        'strikethrough',
-        'eraser',
-        'forecolor',
-        'bgcolor',
-        '|',     // '|' 是菜单组的分割线
-        'fontfamily',
-        'fontsize',
-        'link',
-        'insertcode',
-     ];
-    editor.create();
-</script>
-<script type="text/javascript">
-    var editor = new wangEditor('postbody');
+        editor.config.menus = [
+            'bold',
+            'underline',
+            'italic',
+            'strikethrough',
+            'eraser',
+            'forecolor',
+            'bgcolor',
+            '|',     // '|' 是菜单组的分割线
+            'fontfamily',
+            'fontsize',
+            'link',
+            'insertcode',
+        ];
+        editor.create();
+    </script>
+    <script type="text/javascript">
+        var editor = new wangEditor('postbody');
 
-    editor.config.menus = $.map(wangEditor.config.menus, function(item, key) {
-        if (item === 'source') {
-         return null;
-        }
-        if (item === 'location') {
-         return null;
-        }
-        if (item === 'video') {
-         return null;
-        }
-        if (item === 'fullscreen') {
-         return null;
-        }
-        return item;
-    });
-    editor.create();
-</script>
+        editor.config.menus = $.map(wangEditor.config.menus, function (item, key) {
+            if (item === 'source') {
+                return null;
+            }
+            if (item === 'location') {
+                return null;
+            }
+            if (item === 'video') {
+                return null;
+            }
+            if (item === 'fullscreen') {
+                return null;
+            }
+            return item;
+        });
+        editor.create();
+    </script>
 {% endblock %}
 </body>
 </html>

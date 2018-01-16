@@ -18,11 +18,16 @@ def index():
                            Comments=Comments, questions=questions[::-1], comments=comments[::-1])
 
 
-@manage.route('/user')
+@manage.route('/user',methods=['GET','POST'])
 @admin_required
 def manage_user():
+    s = ManageSearch()
     ids = request.args.get('view', 'n')
-    if ids == 'n':
+    if s.validate_on_submit():
+        key = s.key.data
+        ids = 's'
+        users = User.query.filter_by(username=key).all()
+    elif ids == 'n':
         users = User.query.order_by(User.last_seen).filter_by(ban=True).all()
     elif ids == 'd':
         users = User.query.order_by(User.last_seen).filter_by(ban=False).all()

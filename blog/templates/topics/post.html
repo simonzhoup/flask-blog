@@ -11,17 +11,17 @@
     <div class="panel-heading">
 		<ol class="breadcrumb">
 		    <li><a href="{{ url_for('main.topics') }}" style="color: #fff;">话题</a></li>
-		    <li><a href="{{ url_for('main.topic',topic=p.post_topic.topic) }}" style="color: #fff;">{{ p.post_topic.topic }}</a></li>
+		    <li><a href="{{ url_for('main.topic',topic=p.topic.topic) }}" style="color: #fff;">{{ p.topic.topic }}</a></li>
 		    <li><a style="color: #fff;"><strong>帖子</strong></a></li>
 		</ol>
     </div>
     <ul class="list-group">
 	    <li class="list-group-item">
 	        <h2>{{ p.head }}</h2>
-			<a href="{{ url_for('main.topic',topic=p.post_topic.topic) }}">
+			<a href="{{ url_for('main.topic',topic=p.topic.topic) }}">
 			<button type="button" class="btn btn-success btn-xs">
 			<span class="glyphicon glyphicon-tags"></span>
-			 {{ p.post_topic.topic }}
+			 {{ p.topic.topic }}
 			</button></a>
 			<a href="{{ url_for('main.user_index',id=author.id) }}">
 			<button type="button" class="btn btn-default btn-xs" id="read">
@@ -52,7 +52,11 @@
 	    </li>
     </ul>	
     <div class="panel-footer">
-
+		<p class="text-muted" style="margin-bottom: 0px; font-size: 12px;"><span class="glyphicon glyphicon-tags"></span> <em>TAGGED:</em>
+		{% for t in p.tags.all() %}
+		<a href="#">{{ t.tag.tag_name }}</a> /
+		{% endfor %}
+		</p> 
     </div>
 </div>
 

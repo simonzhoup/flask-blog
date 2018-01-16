@@ -1,5 +1,6 @@
 html, body {
 	height: 100%;
+	background-color: #333333;
 	/* The html and body elements cannot have any padding or margin. */
 /*	font-family: "Microsoft YaHei" ! important;
 */}
@@ -19,7 +20,7 @@ footer {
 }
 #warp {
 	min-height: 100%;
-	background-color: #004869;
+	/*background-color: #004869;*/
 	height: auto;
 	margin-bottom: -50px;
     padding-bottom: 50px;

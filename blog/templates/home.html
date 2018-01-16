@@ -1,17 +1,13 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block left %}
-{{ super() }}
-{% include '_new_question.html' %}
-{% endblock %}
 
 {% block right %}
 {% for p in posts %}
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<strong>{{ p.post_topic.topic }}</strong>
+			<strong>{{ p.topic.topic }}</strong>
 		</h3>
 	</div>
 	<div class="panel-body">
@@ -31,6 +27,11 @@
 		</div>
 	</div>
 	<div class="panel-footer">
+		<p class="text-muted text-right" style="margin-bottom: 0px; font-size: 12px;"><span class="glyphicon glyphicon-tags"></span> <em>TAGGED:</em>
+		{% for t in p.tags.all() %}
+		<a href="#">{{ t.tag.tag_name }}</a> /
+		{% endfor %}
+		</p> 
 	</div>
 </div>
 {% endfor %}

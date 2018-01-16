@@ -1,4 +1,4 @@
-{% extends "manage/index.html" %}
+{% extends "manage/manage_base.html" %}
 
 {% block head %}
 {{ super() }}
@@ -19,7 +19,7 @@
 
 {% block row %}
 
-<div class="panel panel-primary col-sm-5">
+<div class="panel panel-default col-sm-5">
     <div class="panel-heading">
     	<h3 class="panel-title center-block">
         最近登录用户
@@ -70,7 +70,7 @@
     </div>
 </div>
 
-<div class="panel panel-primary col-sm-5">
+<div class="panel panel-default col-sm-5">
     <div class="panel-heading">
     	<h3 class="panel-title center-block">
         新文章
@@ -104,7 +104,7 @@
 				            </div>
 				            <div class="modal-body">
 				            <p>文章标题：{{ post.head }}</p>
-				            <p>文章所属主题： {{ post.post_topic.topic }}</p>
+				            <p>文章所属主题： {{ post.topic.topic }}</p>
 				            <p>文章摘要: {{ (post.body|striptags)[:40] }} ......</p>
 				            <p>发表时间: {{ post.timestamp }}</p>
 				            <p>点击数： {{ post.clink }}</p>
@@ -122,7 +122,7 @@
     </div>
 </div>
 
-<div class="panel panel-primary col-sm-5">
+<div class="panel panel-default col-sm-5">
     <div class="panel-heading">
     	<h3 class="panel-title center-block">
         新问题
@@ -174,7 +174,7 @@
     </div>
 </div>
 
-<div class="panel panel-primary col-sm-5">
+<div class="panel panel-default col-sm-5">
     <div class="panel-heading">
     	<h3 class="panel-title center-block">
         新评论

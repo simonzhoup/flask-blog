@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('manage.index') }}">WeBlog Admin</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li {% if info=="user" %} class="active dropdown" {% endif %}>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">用户管理 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('manage.manage_user',view="n") }}">正常用户</a></li>
+                            <li><a href="{{ url_for('manage.manage_user',view="d") }}">屏蔽用户</a></li>
+                        </ul>
+                    </li>
+                    <li {% if info=="topic" %} class="active dropdown" {% endif %}>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">主题管理 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('manage.manage_topic',view="n") }}">正常主题</a></li>
+                            <li><a href="{{ url_for('manage.manage_topic',view="d") }}">屏蔽主题</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">文章管理</a></li>
+                    <li><a href="#">问题管理</a></li>
+                    <li><a href="#">答案管理</a></li>
+                    <li><a href="#">评论管理</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/">退出</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block inside_row %}
+    <div class="col-xs-12">
+        {% block row %}
+        {% endblock %}
+    </div>
+{% endblock %}
+

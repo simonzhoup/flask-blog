@@ -4,11 +4,12 @@ from flask import render_template, make_response, redirect, url_for, request, fl
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
-from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages, Answer, Question
+from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages, Answer, Question, Tag, PostTag
 from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm, AskForm
 from .. import db
 from sqlalchemy import and_, or_
 import re
+import random
 
 # @main.route('/search/', methods=['GET', 'POST'])
 # def Search(sss):
@@ -18,12 +19,19 @@ import re
 #     return redirect(url_for('main.Searchs', xxx=sss))
 
 
+@main.context_processor
+def utility_processor():
+    '''文处理器，在每个视图函数调用之前运行，可以向模板中传递参数，以字典方式'''
+    questions = Question.query.order_by(Question.timestamp).limit(5).all()
+    return dict(Tag=Tag, random=random, search=SearchForm(), questions=questions[::-1])
+
+
 @main.route('/search/<xxx>', methods=['GET', 'POST'])
 def Searchs(xxx):
     sss = '%' + xxx + '%'
     posts = Post.query.filter(
         or_(Post.body.like(sss), Post.head.like(sss))).all()
-    return render_template('search.html', posts=posts, search=SearchForm())
+    return render_template('search.html', posts=posts)
 
 
 @main.before_app_request
@@ -70,8 +78,6 @@ def user_seting():
             db.session.add(current_user)
             flash('密码已更改')
             return redirect(url_for('main.passwd_resp'))
-        # return render_template('index.html', user=current_user, index=index,
-        # form=form, title='密码设置', id=id)
     if index == 'seting3':
         form = Avatar()
         if form.validate_on_submit():
@@ -91,9 +97,8 @@ def user_seting():
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
-    posts = Post.query.order_by(Post.timestamp).limit(5).all()
-    questions = Question.query.order_by(Question.timestamp).limit(5).all()
-    return render_template('home.html', user=current_user, search=SearchForm(), posts=posts[::-1], questions=questions[::-1])
+    posts = Post.query.order_by(Post.timestamp).all()[-5:]
+    return render_template('home.html', user=current_user, posts=posts[::-1], Tag=Tag, random=random)
 
 # 用户主页
 
@@ -119,7 +124,7 @@ def user_index(id):
     # if show == '0':
     #     post = db.session.query(Post).join(Answer).join(Comments).join(
     #         Question).filter_by(author=user.id).order_by(timestamp).all()
-    return render_template('index.html', show=show, user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, search=SearchForm(), Comments=Comments, Post=Post, Question=Question)
+    return render_template('index.html', show=show, user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, Comments=Comments, Post=Post, Question=Question)
 
 
 @main.route('/all/<id>')
@@ -189,7 +194,7 @@ def email_resp():
 def user_follower_all(id):
     user = User.query.get_or_404(id)
     all_follower = user.all_follower()
-    return render_template('index.html', user=user, index='follower-all,index', all_follower=all_follower, search=SearchForm())
+    return render_template('index.html', user=user, index='follower-all,index', all_follower=all_follower)
 
 # 所有关注的人界面
 
@@ -198,7 +203,7 @@ def user_follower_all(id):
 def user_followed_all(id):
     user = User.query.get_or_404(id)
     all_followed = user.all_follow()
-    return render_template('index.html', user=user, index='followed-all,index', all_followed=all_followed, search=SearchForm())
+    return render_template('index.html', user=user, index='followed-all,index', all_followed=all_followed)
 
 # 关注用户
 
@@ -239,7 +244,7 @@ def topics():
         t.img = '%s.jpg' % t.id
         db.session.add(t)
         return redirect(url_for('main.topics'))
-    return render_template('topics/topics.html', form=form, topics=topics, search=SearchForm(), Post=Post)
+    return render_template('topics/topics.html', form=form, topics=topics, Post=Post)
 
 # 话题
 
@@ -259,7 +264,7 @@ def topic(topic):
     f = None
     if current_user.is_authenticated:
         f = current_user.is_follow_t(t)
-    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, form=form, search=SearchForm(), Comments=Comments)
+    return render_template('topics/topic.html', t=t, f=f, title=topic, Post=Post, form=form, Comments=Comments)
 
 # 新帖子
 
@@ -276,10 +281,22 @@ def new_post():
                  head=form.head.data, body=form.postbody.data)
         db.session.add(p)
         db.session.commit()
-        # p = Post.query.order_by(Post.id).first()[::-1]
+        if form.tag.data:
+            tags = re.findall(r'#(.+?)\s', form.tag.data)
+            for tag in tags:
+                t = Tag.query.filter_by(tag_name=tag).first()
+                if t:
+                    pt = PostTag(post_id=p.id, tags_id=t.id)
+                    db.session.add(pt)
+                else:
+                    t = Tag(tag_name=tag)
+                    db.session.add(t)
+                    db.session.commit()
+                    pt = PostTag(post_id=p.id, tags_id=t.id)
+                    db.session.add(pt)
         return redirect(url_for('main.post', id=p.id))
     topics = Topic.query.order_by(Topic.id).all()
-    return render_template('topics/new_post.html', form=form, topics=topics, search=SearchForm())
+    return render_template('topics/new_post.html', form=form, topics=topics)
 
 
 @main.route('/delete-post/<id>')
@@ -328,7 +345,7 @@ def post(id):
     p.ping()
     author = User.query.filter_by(id=p.author).first()
     comments = Comments.query.filter_by(post_id=p.id).all()
-    return render_template('topics/post.html', p=p, author=author, commentform=commentform, search=SearchForm(), comments=comments)
+    return render_template('topics/post.html', p=p, author=author, commentform=commentform, comments=comments)
 
 
 @main.route('/topic/follow/<topic>')
@@ -363,7 +380,7 @@ def messages():
     a_ms = Messages.query.filter_by(
         q_author_id=current_user.id).filter_by(is_read=False).all()
     read_ms = Messages.query.filter_by(is_read=True).all()
-    return render_template('user/messages.html', a_ms=a_ms, Question=Question, post_ms=post_ms, at_ms=at_ms, search=SearchForm(), User=User, Post=Post, Comments=Comments, read_ms=read_ms)
+    return render_template('user/messages.html', a_ms=a_ms, Question=Question, post_ms=post_ms, at_ms=at_ms, User=User, Post=Post, Comments=Comments, read_ms=read_ms)
 
 
 @main.route('/user/read_all_messages')
@@ -399,7 +416,7 @@ def ask():
         db.session.add(q)
         flash('提问已发布')
         return redirect(url_for('main.ask'))
-    return render_template('ask/ask_index.html', search=SearchForm(), qs=qs, form=form, User=User)
+    return render_template('ask/ask_index.html', qs=qs, form=form, User=User)
 
 
 @main.route('/sak/question/<int:id>', methods=['GET', 'POST'])
@@ -425,7 +442,7 @@ def question(id):
                            q_id=q.id, body_id=a.id)
             db.session.add(mes)
         return redirect(url_for('main.question', id=id))
-    return render_template('ask/question.html', q=q, search=SearchForm(), User=User, commentform=commentform, answers=answers)
+    return render_template('ask/question.html', q=q, User=User, commentform=commentform, answers=answers)
 
 
 @main.route('/sak/question/app/<int:id>%<int:q_id>')
@@ -456,3 +473,12 @@ def is_answer(id, ad):
     db.session.add(q)
     db.session.add(a)
     return redirect(url_for('main.question', id=id))
+
+
+@main.route('/post/tag/<tag>', methods=['GET', 'POST'])
+def post_for_tag(tag):
+    tag = Tag.query.filter_by(id=tag).first()
+    if not tag:
+        abort(404)
+    posts = tag.posts.all()
+    return render_template('post_for_tag.html', posts=posts)
