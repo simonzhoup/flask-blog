@@ -52,8 +52,8 @@ class User(UserMixin, db.Model):
         'followed', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
     topic = db.relationship('Topic', backref='topic_author', lazy='dynamic')
     post = db.relationship('Post', backref='post_author', lazy='dynamic')
-    follow_topic = db.relationship('Topic', backref=db.backref(
-        'follow_topic', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
+    follow_topic = db.relationship('TopicFollows', backref=db.backref(
+        'users', lazy='joined'), lazy='dynamic', cascade='all,delete-orphan')
     comments = db.relationship(
         'Comments', backref='comment_author', lazy='dynamic')
     question = db.relationship(
@@ -109,16 +109,18 @@ class User(UserMixin, db.Model):
 
     def follow_t(self, topic):
         if not self.is_follow(topic):
-            f = TopicFollows(user_id=self, topic_id=topic)
+            print('aaaaaaaaaaaaa')
+            f = TopicFollows(user_id=self.id, topic_id=topic.id)
             db.session.add(f)
 
     def unfollow_t(self, topic):
-        f = self.follow_topic.filter_by(topic_id=tpoic).first()
+        f = TopicFollows.query.filter_by(
+            user_id=self.id, topic_id=topic.id).first()
         if f:
             db.session.delete(f)
 
     def is_follow_t(self, topic):
-        return self.follow_topic.filter_by(follow_topic=topic).first() is not None
+        return self.follow_topic.filter_by(topic_id=topic.id).first() is not None
 
 
 class AnonymousUser(AnonymousUserMixin):
