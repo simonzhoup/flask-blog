@@ -1,3 +1,4 @@
+# coding=utf-8
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SubmitField, PasswordField, ValidationError, TextAreaField, SelectField
@@ -45,7 +46,8 @@ class TopicForm(FlaskForm):
 class PostForm(FlaskForm):
     head = StringField('标题', validators=[Required(), Length(1, 64)])
     postbody = TextAreaField('内容', validators=[Required()])
-    tag = StringField('标签',render_kw={'placeholder':'标签必须以’#‘符号开头，空格结尾。可以同时添加多个标签。'})
+    tag = StringField(
+        '标签', render_kw={'placeholder': '标签必须以’#‘符号开头，空格结尾。可以同时添加多个标签。'})
     topic = SelectField('所属话题', coerce=int)
     submit = SubmitField('提交')
 

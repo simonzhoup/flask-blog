@@ -1,3 +1,4 @@
+# coding=utf-8
 from flask import render_template, redirect, url_for, flash
 from . import auth
 from .forms import UserRegister, UserLogin

@@ -4,8 +4,11 @@ from config import config
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-import pymysql
-pymysql.install_as_MySQLdb()
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,7 +29,6 @@ def create_blog(config_name):
     db.init_app(blog)
     login_manager.init_app(blog)
 
-    # 注册蓝本
     from .main import main as main_buleprint
     blog.register_blueprint(main_buleprint)
 
