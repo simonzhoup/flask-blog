@@ -1,6 +1,6 @@
-# coding = utf-8
+# coding=utf-8
 # 视图
-from flask import render_template, make_response, redirect, url_for, request, flash, abort, g
+from flask import render_template, make_response, redirect, url_for, request, flash, abort, g, current_app, json
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
@@ -8,22 +8,21 @@ from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages
 from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm, AskForm
 from .. import db
 from sqlalchemy import and_, or_
+from flask_sqlalchemy import get_debug_queries
 import re
 import random
-
-# @main.route('/search/', methods=['GET', 'POST'])
-# def Search(sss):
-#     # posts = Post.query.filter(Post.body.like(sss)).all()
-#     # return render_template('search.html', posts=posts, search=SearchForm(),
-#     # Topic=Topic)
-#     return redirect(url_for('main.Searchs', xxx=sss))
+from config import Config
+import logging
+from logging.handlers import SMTPHandler
 
 
 @main.context_processor
 def utility_processor():
     '''文处理器，在每个视图函数调用之前运行，可以向模板中传递参数，以字典方式'''
     questions = Question.query.order_by(Question.timestamp).limit(5).all()
-    return dict(Tag=Tag, random=random, search=SearchForm(), questions=questions[::-1])
+    tags = Tag.query.all()
+    random.shuffle(tags)
+    return dict(tags=tags, random=random, search=SearchForm(), questions=questions[::-1])
 
 
 @main.route('/search/<xxx>', methods=['GET', 'POST'])
@@ -97,8 +96,24 @@ def user_seting():
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
-    posts = Post.query.order_by(Post.timestamp).all()[-5:]
-    return render_template('home.html', user=current_user, posts=posts[::-1], Tag=Tag, random=random)
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=10, error_out=False)
+    posts = pagination.items[::-1]
+    uc = User.query.count()
+    pc = Post.query.count()
+    qc = Question.query.count()
+    ac = Answer.query.count()
+    cc = Comments.query.count()
+    data = {
+        'uc': uc,
+        'pc': pc,
+        'qc': qc,
+        'ac': ac,
+        'cc': cc,
+        'pagination': pagination,
+    }
+    return render_template('home.html', data=data, user=current_user, posts=posts[::-1], Tag=Tag, random=random)
 
 # 用户主页
 
@@ -111,6 +126,7 @@ def user_index(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     show = request.cookies.get('show', '1')
+    page = request.args.get('page', 1, type=int)
     if show == '1':
         q = Post
     elif show == '2':
@@ -119,12 +135,11 @@ def user_index(id):
         q = Comments
     elif show == '4':
         q = Question
-    posts = db.session.query(q).filter_by(
-        author=user.id).order_by(q.timestamp).all()
-    # if show == '0':
-    #     post = db.session.query(Post).join(Answer).join(Comments).join(
-    #         Question).filter_by(author=user.id).order_by(timestamp).all()
-    return render_template('index.html', show=show, user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, Comments=Comments, Post=Post, Question=Question)
+    pagination = q.query.filter_by(
+        author=user.id).order_by(q.timestamp).paginate(
+        page, per_page=10, error_out=False)
+    posts = pagination.items[::-1]
+    return render_template('index.html', show=show, user=user, Topic=Topic, pagination=pagination, posts=posts, index='index,info', c1=c1, c2=c2, Comments=Comments, Post=Post, Question=Question)
 
 
 @main.route('/all/<id>')
@@ -276,9 +291,11 @@ def new_post():
     if Topic.query.all() == []:
         flash('还没有任何主题，添加一个吧。')
         return redirect(url_for('main.topics'))
-    if form.validate_on_submit():
+    if request.method == 'POST':
         p = Post(author=current_user.id, tpoic=form.topic.data,
                  head=form.head.data, body=form.postbody.data)
+        # data = json.loads(request.form.get('data'))
+        # body = data['body']
         db.session.add(p)
         db.session.commit()
         if form.tag.data:
@@ -304,7 +321,7 @@ def new_post():
 def delete_post(id):
     '''删除帖子'''
     p = Post.query.get_or_404(id)
-    topic = p.post_topic.topic
+    topic = p.topic.topic
     user = User.query.filter_by(id=p.author).first()
     if user.is_self(current_user):
         db.session.delete(p)
@@ -324,12 +341,12 @@ def delete_post(id):
 def post(id):
     commentform = CommentForm()
     p = Post.query.get_or_404(id)
-    if current_user.is_authenticated and commentform.validate_on_submit():
+    if current_user.is_authenticated and request.method == 'POST':
         comment = Comments(author=current_user.id,
                            post_id=p.id, body=commentform.body.data, post_author_id=p.author)
         db.session.add(comment)
         db.session.commit()
-        x = re.match('.*@(.+)\s.*', commentform.body.data)
+        x = re.match('.*@(.+)&nbsp;.*', commentform.body.data)
         if x:
             username = x.group(1)
             u = User.query.filter_by(username=username).first()
@@ -410,7 +427,7 @@ def read_messages(id):
 def ask():
     qs = Question.query.order_by(Question.timestamp).all()
     form = AskForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         q = Question(author=current_user.id,
                      title=form.title.data, body=form.body.data)
         db.session.add(q)
@@ -481,4 +498,5 @@ def post_for_tag(tag):
     if not tag:
         abort(404)
     posts = tag.posts.all()
-    return render_template('post_for_tag.html', posts=posts)
+    tag = tag.tag_name
+    return render_template('post_for_tag.html', posts=posts, tag=tag)

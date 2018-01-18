@@ -8,7 +8,7 @@
 #topic {
 	display: table;
 }
-.form-group:nth-child(5) {
+.form-group:nth-child(6) {
 	display: table;
 }
 </style>
@@ -21,9 +21,39 @@
 	<b>新帖子</b>
 	</div>
     <div class="panel-body">
-    {{ wtf.quick_form(form) }}
+    	<form role="form" action="{{ url_for('main.new_post') }}" method="post">
+    		{{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.head.label }} {{ form.head(class ="form-control")}}
+            </div>
+    		<div class="form-group" style="margin-bottom: 0px;">
+    			{{ form.postbody.label }}
+                <div hidden>
+                {{ form.postbody(class ="form-control")}}
+                </div>
+    		</div>
+		    <div id="editor" style="margin-bottom: 15px; background-color: #fff;">
+		    </div>
+    		<div class="form-group">
+    			{{ form.tag.label }} {{ form.tag(class ="form-control")}}
+    		</div>
+    		<div class="form-group">
+    			{{ form.topic.label }} {{ form.topic(class ="form-control")}}
+    		</div>
+    	   <button class="btn btn-info" id="submit-new-post">发布</button>
+        </form>
+    <script src="{{ url_for('static',filename='js/wangEditor.min.js') }}"></script>
+    <script type="text/javascript">
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        var $postbody = $('#postbody')
+        editor.customConfig.onchange = function (html) {
+            $postbody.val(html)
+        }      
+        editor.create();
+        $postbody.val(editor.txt.html())
+    </script>
     </div>
-	<!--     <div class="panel-footer" id="div1">
-		</div> -->
+
 </div>
 {% endblock %}

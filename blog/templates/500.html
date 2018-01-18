@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+{{ super() }}
+<title>围脖blog -- 500</title>
+<style>
+#submit {float:right;}
+</style>
+{% endblock %}
+
+{% block inside_row %}
+<div class="panel panel-default col-md-6 col-md-offset-3">
+    <div class="panel-body">
+        <h1 class="text-center">500</h1>
+    </div>
+</div>
+{% endblock %}

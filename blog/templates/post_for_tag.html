@@ -3,13 +3,13 @@
 
 
 {% block title %}
-<title>围脖blog -- {{ posts[0].tag.tag_name }}</title>
+<title>围脖blog -- {{ tag }}</title>
 {% endblock %}
 
 {% block right %}
 <div class="panel panel-default col-xs-12" style="padding-bottom: 20px;">
     <div class="panel-heading">
-    	<p class="text-center">标签: {{ posts[0].tag.tag_name }}</p>
+    	<p class="text-center">标签: {{ tag }}</p>
     </div>
 	{% if posts == [] %}
 	<div class="panel-body">
