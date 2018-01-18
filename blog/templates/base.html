@@ -7,7 +7,7 @@
         {% block title %}
             <title>围脖blog</title>
         {% endblock %}
-        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes"> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
         <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
         <!-- <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet"> -->
         <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
@@ -53,7 +53,9 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('main.ask') }}">技术问答</a></li>
                     <li><a href="{{ url_for('main.topics') }}">主题文章</a></li>
+                    {% if current_user.is_admin() %}
                     <li><a href="{{ url_for('manage.index') }}">后台管理</a></li>
+                    {% endif %}
                 </ul>
 
                 {% if current_user.is_authenticated %}
@@ -105,22 +107,7 @@
                 {% block inside_row %}
                     <div class="col-lg-3" id="left">
                         {% block left %}
-                            {% if current_user.is_authenticated %}
-                                {% include '_user_left.html' %}
-                            {% else %}
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">
-                                            每日一句
-                                        </h3>
-                                    </div>
-                                    <div class="panel-body">
-                                        You raise me up,so I can stand on mountains .You raise me up,to walk on stormy
-                                        seas. <br/><br/>
-                                        你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。
-                                    </div>
-                                </div>
-                            {% endif %}
+                            {% include '_user_left.html' %}
                         {% endblock %}
                     </div>
                     <div class="clearfix visible-xs"></div>

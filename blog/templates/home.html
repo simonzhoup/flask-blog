@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-
+{% import "_macros.html" as macros %}
 
 {% block right %}
 {% for p in posts %}
@@ -35,4 +35,9 @@
 	</div>
 </div>
 {% endfor %}
+{% if data['pagination'] %} 
+<div class="pagination pull-right">
+    {{ macros.pagination_widget(data['pagination'], 'main.home') }}
+</div>
+{% endif %}
 {% endblock %}

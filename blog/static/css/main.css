@@ -126,13 +126,33 @@ canvas {
   display:-webkit-box;
   text-overflow:ellipsis;
   overflow:hidden;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 10;
   -webkit-box-orient:vertical;
   line-height:24px;
   letter-spacing:2px;  
-  font-size: 18px;
+  font-size: 15px;
   padding-left: 20px;
   padding-right: 20px;
   margin-bottom: 10px;
   color: #383838;
 }
+
+@media screen and (max-width: 1081px) { 
+#left, #right {
+	margin-left: 0px;
+	margin-right: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.container {
+	margin-left: 10px;
+	margin-right: 10px;
+	padding-left: 0px;
+	padding-right: 0px;
+	width: auto;
+}
+.post-body {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+} 

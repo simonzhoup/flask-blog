@@ -1,4 +1,4 @@
-# coding = utf-8
+# coding=utf-8
 # 视图
 from flask import render_template, make_response, redirect, url_for, request, flash, abort, g
 from datetime import datetime
@@ -97,8 +97,24 @@ def user_seting():
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
-    posts = Post.query.order_by(Post.timestamp).all()[-5:]
-    return render_template('home.html', user=current_user, posts=posts[::-1], Tag=Tag, random=random)
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=5, error_out=False)
+    posts = pagination.items[::-1]
+    uc = User.query.count()
+    pc = Post.query.count()
+    qc = Question.query.count()
+    ac = Answer.query.count()
+    cc = Comments.query.count()
+    data = {
+        'uc': uc,
+        'pc': pc,
+        'qc': qc,
+        'ac': ac,
+        'cc': cc,
+        'pagination': pagination,
+    }
+    return render_template('home.html', data=data, user=current_user, posts=posts[::-1], Tag=Tag, random=random)
 
 # 用户主页
 

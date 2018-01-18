@@ -29,20 +29,22 @@
 		<a href="{{ url_for('main.messages') }}"><p class="message" style="margin: 0px">站内消息 {% if current_user.noread_messages > 0 %}<span class="badge" style="background-color: #FF3300;">{{ current_user.noread_messages }}</span>{% endif %}</p></a>
 	</div>
 </div>
-{% else %}
-<div class="panel panel-primary">
+{% endif %}
+{% if data %}
+<div class="panel panel-info">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			每日一句
+			网站统计
 		</h3>
 	</div>
 	<div class="panel-body">
-		You raise me up,so I can stand on mountains .You raise me up,to walk on stormy seas. <br /><br />
-		你激励了我故我能立足于群山之巅。你鼓舞了我,故我能行进于暴风雨的洋面。 
+		<p><span class="glyphicon glyphicon-user" style="color: #99CCCC;"></span> 会员：<span class="badge">{{ data['uc'] }}</span></p> 
+		<p><span class="glyphicon glyphicon-folder-open" style="color: #99CCCC;"></span> 文章：<span class="badge">{{ data['pc'] }}</span></p> 
+		<p><span class="glyphicon glyphicon-question-sign" style="color: #99CCCC;"></span> 问题：<span class="badge">{{ data['qc'] }}</span></p> 
+		<p><span class="glyphicon glyphicon-ok-sign" style="color: #99CCCC;"></span> 回答：<span class="badge">{{ data['ac'] }}</span></p> 
+		<p><span class="glyphicon glyphicon-comment" style="color: #99CCCC;"></span> 评论：<span class="badge">{{ data['cc'] }}</span></p> 
 	</div>
 </div>
-
-
 {% endif %}
 <div class="panel panel-primary">
 	<div class="panel-heading">
