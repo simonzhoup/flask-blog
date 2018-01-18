@@ -7,6 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or '!@#$%^&*12345678'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JSON_AS_ASCII = False
 
     @staticmethod
     def init_blog(blog):
@@ -21,6 +22,3 @@ class DevelopmentConfig(Config):
 config = {
     'development': DevelopmentConfig,
 }
-
-
-

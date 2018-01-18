@@ -53,6 +53,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('main.ask') }}">技术问答</a></li>
                     <li><a href="{{ url_for('main.topics') }}">主题文章</a></li>
+                    <li><a href="{{ url_for('api.get_index') }}">API</a></li>
                     {% if current_user.is_admin() %}
                     <li><a href="{{ url_for('manage.index') }}">后台管理</a></li>
                     {% endif %}

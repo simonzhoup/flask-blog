@@ -3,7 +3,6 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SubmitField, PasswordField, ValidationError, TextAreaField, SelectField
 from wtforms.validators import Required, Length, Email, EqualTo, Regexp
-from ..models import User, Topic
 from flask_login import current_user
 from flask_uploads import UploadSet, IMAGES
 

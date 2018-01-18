@@ -4,8 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user, AnonymousUserMixin
 from datetime import datetime
 from sqlalchemy import and_, or_
-from flask import abort
+from flask import abort, url_for
 from functools import wraps
+from .exceptions import ValidationError
 
 
 def admin_required(f):
@@ -60,6 +61,18 @@ class User(UserMixin, db.Model):
     question = db.relationship(
         'Question', backref='q_author', lazy='dynamic')
 
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_user', id=self.id, _external=True),
+            'username': self.username,
+            'member_since': self.member_since,
+            'last_seen': self.last_seen,
+            'posts': url_for('api.get_user_posts', id=self.id, _external=True),
+            'questions': url_for('api.get_user_questions', id=self.id, _external=True),
+            'post_count': self.post.count()
+        }
+        return json_user
+
     @property
     def password(self):
         raise AttributeError(u'密码属性不可读')
@@ -110,7 +123,6 @@ class User(UserMixin, db.Model):
 
     def follow_t(self, topic):
         if not self.is_follow(topic):
-            print('aaaaaaaaaaaaa')
             f = TopicFollows(user_id=self.id, topic_id=topic.id)
             db.session.add(f)
 
@@ -122,6 +134,19 @@ class User(UserMixin, db.Model):
 
     def is_follow_t(self, topic):
         return self.follow_topic.filter_by(topic_id=topic.id).first() is not None
+
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -183,6 +208,16 @@ class Comments(db.Model):
         self.read = True
         db.session.add(self)
 
+    def to_json(self):
+        json_data = {
+            'url': url_for('api.get_comment', id=self.id, _external=True),
+            'post': url_for('api.get_post', id=self.post_id, _external=True),
+            'author': url_for('api.get_user', id=self.author, _external=True),
+            'body': self.body,
+            'timestamp': self.timestamp
+        }
+        return json_data
+
 
 class Answer(db.Model):
     """database for QA"""
@@ -206,6 +241,18 @@ class Answer(db.Model):
         self.opp += 1
         db.session.add(self)
 
+    def to_json(self):
+        json_data = {
+            'url': url_for('api.get_answer', id=self.id, _external=True),
+            'anthor': url_for('api.get_user', id=self.author, _external=True),
+            'question': url_for('api.get_question', id=self.q_id, _external=True),
+            'agree': self.app,
+            'oppose': self.opp,
+            'timestamp': self.timestamp,
+            'answer': self.body
+        }
+        return json_data
+
 
 class Question(db.Model):
     __tablename__ = 'questions'
@@ -228,6 +275,16 @@ class Question(db.Model):
     def read(self):
         self.clink += 1
         db.session.add(self)
+
+    def to_json(self):
+        json_data = {
+            'url': url_for('api.get_question', id=self.id, _external=True),
+            'author': url_for('api.get_user', id=self.author, _external=True),
+            'timestamp': self.timestamp,
+            'question': self.body,
+            'answers': url_for('api.get_question_answers', id=self.id, _external=True)
+        }
+        return json_data
 
 db.event.listen(Answer.q_id, 'set', Question.changde_reply)
 
@@ -290,3 +347,21 @@ class Post(db.Model):
     def ping(self):
         self.clink += 1
         db.session.add(self)
+
+    def to_json(self):
+        json_data = {
+            'url': url_for('api.get_post', id=self.id, _external=True),
+            'body': self.body,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author, _external=True),
+            'comments': url_for('api.get_post_comments', id=self.id, _external=True),
+            'comment_count': Comments.query.filter_by(post_id=self.id).count(),
+        }
+        return json_data
+
+    @staticmethod
+    def form_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+        return Post(body=body)

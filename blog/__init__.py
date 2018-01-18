@@ -38,4 +38,7 @@ def create_blog(config_name):
     from .manage import manage as manage_buleprint
     blog.register_blueprint(manage_buleprint, url_prefix='/manage')
 
+    from .api_1_0 import api as api_1_0_blueprint
+    blog.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
+
     return blog
