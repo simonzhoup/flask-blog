@@ -1,6 +1,6 @@
 # coding=utf-8
 # 视图
-from flask import render_template, make_response, redirect, url_for, request, flash, abort, g
+from flask import render_template, make_response, redirect, url_for, request, flash, abort, g, current_app
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
@@ -8,15 +8,38 @@ from ..models import User, Follow, Topic, Post, TopicFollows, Comments, Messages
 from .forms import UserInfo, UserPasswd, Avatar, TopicForm, PostForm, EditTopic, CommentForm, SearchForm, AskForm
 from .. import db
 from sqlalchemy import and_, or_
+from flask_sqlalchemy import get_debug_queries
 import re
 import random
+from config import Config
+import logging
+from logging.handlers import SMTPHandler
 
-# @main.route('/search/', methods=['GET', 'POST'])
-# def Search(sss):
-#     # posts = Post.query.filter(Post.body.like(sss)).all()
-#     # return render_template('search.html', posts=posts, search=SearchForm(),
-#     # Topic=Topic)
-#     return redirect(url_for('main.Searchs', xxx=sss))
+
+# @main.after_app_request
+# def after_request(response):
+#     for query in get_debug_queries():
+#         if query.duration >= current_app.config['FLASKY_DB_QUERY_TIMEOUT']:
+#             current_app.logger.error(
+#                 'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n' %
+#                 (query.statement, query.parameters, query.duration,
+#                  query.context))
+#     credentials = None
+#     secure = None
+#     if getattr(Config, 'MAIL_USERNAME', None) is not None:
+#         credentials = (Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
+#         if getattr(Config, 'MAIL_USE_SSL', None):
+#             secure = ()
+#     mail_handler = SMTPHandler(
+#         mailhost=(Config.MAIL_SERVER, Config.MAIL_PORT),
+#         fromaddr=Config.FLASKY_MAIL_SENDER,
+#         toaddrs=[Config.FLASKY_ADMIN],
+#         subject=Config.FLASKY_MAIL_SUBJECT_PREFIX + ' Application Error',
+#         credentials=credentials,
+#         secure=secure)
+#     mail_handler.setLevel(logging.ERROR)
+#     current_app.logger.addHandler(mail_handler)
+#     return response
 
 
 @main.context_processor

@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, Response
-from config import config
+from config import config, Config
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -20,10 +20,10 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.user_login'
 
 
-def create_blog(config_name):
+def create_blog():
     blog = Flask(__name__)
-    blog.config.from_object(config[config_name])
-    config[config_name].init_blog(blog)
+    blog.config.from_object(Config)
+    Config.init_blog(blog)
 
     bootstrap.init_app(blog)
     db.init_app(blog)
