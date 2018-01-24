@@ -4,6 +4,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SubmitField, PasswordField, ValidationError, TextAreaField, SelectField
 from wtforms.validators import Required, Length, Email, EqualTo, Regexp
 from flask_login import current_user
+from ..models import Topic
 from flask_uploads import UploadSet, IMAGES
 
 images = UploadSet('images', IMAGES)
@@ -71,7 +72,8 @@ class CommentForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    key1 = StringField('', validators=[Length(1, 64)])
+    key1 = StringField('搜索', validators=[Length(1, 64)], render_kw={
+                       'placeholder': '请输入关键字'})
     search = SubmitField('搜索')
 
 

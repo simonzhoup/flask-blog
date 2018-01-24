@@ -9,10 +9,8 @@
         {% endblock %}
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
         <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
-        <!-- <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet"> -->
         <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
         <link rel="shortcut icon" href="{{ url_for('static',filename='icon/shortcut.ico') }}">
-        <link href="{{ url_for('static', filename='dist/css/wangEditor.min.css') }}" rel="stylesheet">
         <script src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
         <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
         <script src="{{ url_for('static',filename='js/moment-with-locales.js') }}"></script>
@@ -165,51 +163,6 @@
 </div>
 
 {% block scripts %}
-    <script type="text/javascript">
-        document.getElementById("key1").setAttribute("placeholder", "输入关键字");
-    </script>
-    <script src="{{ url_for('static',filename='js/particles.js') }}"></script>
-    <script src="{{ url_for('static',filename='js/app.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static',filename='dist/js/wangEditor.min.js') }}"></script>
-    <script type="text/javascript">
-        var editor = new wangEditor('body');
-
-        editor.config.menus = [
-            'bold',
-            'underline',
-            'italic',
-            'strikethrough',
-            'eraser',
-            'forecolor',
-            'bgcolor',
-            '|',     // '|' 是菜单组的分割线
-            'fontfamily',
-            'fontsize',
-            'link',
-            'insertcode',
-        ];
-        editor.create();
-    </script>
-    <script type="text/javascript">
-        var editor = new wangEditor('postbody');
-
-        editor.config.menus = $.map(wangEditor.config.menus, function (item, key) {
-            if (item === 'source') {
-                return null;
-            }
-            if (item === 'location') {
-                return null;
-            }
-            if (item === 'video') {
-                return null;
-            }
-            if (item === 'fullscreen') {
-                return null;
-            }
-            return item;
-        });
-        editor.create();
-    </script>
 {% endblock %}
 </body>
 </html>

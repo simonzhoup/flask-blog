@@ -1,6 +1,6 @@
 # coding=utf-8
 # 视图
-from flask import render_template, make_response, redirect, url_for, request, flash, abort, g, current_app
+from flask import render_template, make_response, redirect, url_for, request, flash, abort, g, current_app, json
 from datetime import datetime
 from . import main
 from flask_login import current_user, login_required
@@ -14,32 +14,6 @@ import random
 from config import Config
 import logging
 from logging.handlers import SMTPHandler
-
-
-# @main.after_app_request
-# def after_request(response):
-#     for query in get_debug_queries():
-#         if query.duration >= current_app.config['FLASKY_DB_QUERY_TIMEOUT']:
-#             current_app.logger.error(
-#                 'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n' %
-#                 (query.statement, query.parameters, query.duration,
-#                  query.context))
-#     credentials = None
-#     secure = None
-#     if getattr(Config, 'MAIL_USERNAME', None) is not None:
-#         credentials = (Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
-#         if getattr(Config, 'MAIL_USE_SSL', None):
-#             secure = ()
-#     mail_handler = SMTPHandler(
-#         mailhost=(Config.MAIL_SERVER, Config.MAIL_PORT),
-#         fromaddr=Config.FLASKY_MAIL_SENDER,
-#         toaddrs=[Config.FLASKY_ADMIN],
-#         subject=Config.FLASKY_MAIL_SUBJECT_PREFIX + ' Application Error',
-#         credentials=credentials,
-#         secure=secure)
-#     mail_handler.setLevel(logging.ERROR)
-#     current_app.logger.addHandler(mail_handler)
-#     return response
 
 
 @main.context_processor
@@ -315,9 +289,11 @@ def new_post():
     if Topic.query.all() == []:
         flash('还没有任何主题，添加一个吧。')
         return redirect(url_for('main.topics'))
-    if form.validate_on_submit():
+    if request.method == 'POST':
         p = Post(author=current_user.id, tpoic=form.topic.data,
                  head=form.head.data, body=form.postbody.data)
+        # data = json.loads(request.form.get('data'))
+        # body = data['body']
         db.session.add(p)
         db.session.commit()
         if form.tag.data:
@@ -343,7 +319,7 @@ def new_post():
 def delete_post(id):
     '''删除帖子'''
     p = Post.query.get_or_404(id)
-    topic = p.post_topic.topic
+    topic = p.topic.topic
     user = User.query.filter_by(id=p.author).first()
     if user.is_self(current_user):
         db.session.delete(p)
@@ -363,7 +339,7 @@ def delete_post(id):
 def post(id):
     commentform = CommentForm()
     p = Post.query.get_or_404(id)
-    if current_user.is_authenticated and commentform.validate_on_submit():
+    if current_user.is_authenticated and request.method == 'POST':
         comment = Comments(author=current_user.id,
                            post_id=p.id, body=commentform.body.data, post_author_id=p.author)
         db.session.add(comment)
@@ -449,7 +425,7 @@ def read_messages(id):
 def ask():
     qs = Question.query.order_by(Question.timestamp).all()
     form = AskForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         q = Question(author=current_user.id,
                      title=form.title.data, body=form.body.data)
         db.session.add(q)
@@ -520,4 +496,5 @@ def post_for_tag(tag):
     if not tag:
         abort(404)
     posts = tag.posts.all()
-    return render_template('post_for_tag.html', posts=posts)
+    tag = tag.tag_name
+    return render_template('post_for_tag.html', posts=posts, tag=tag)
