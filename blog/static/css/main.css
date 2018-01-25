@@ -15,16 +15,16 @@ footer {
 	background-color: #ffffff;
 }
 .navbar {
-	opacity:0.9;
+	/*opacity:0.9;*/
 	/*box-shadow: 0px 5px 8px #B8B8B8;*/
 }
 #warp {
 	min-height: 100%;
 	/*background-color: #004869;*/
 	height: auto;
-	margin-bottom: -50px;
-    padding-bottom: 50px;
-    padding-top: 70px;
+	margin-top: 0px;
+	/*margin-bottom: -50px;*/
+    /*padding-bottom: 50px;*/
 }
 .register-form {
 /*	padding-top:10px;
@@ -108,7 +108,7 @@ div.modal {
 	padding-top: 40px;
 }
 #footer {
-	opacity:0.7;
+	/*opacity:0.7;*/
 }
 canvas {
     position: fixed;
@@ -156,3 +156,6 @@ canvas {
 	padding-right: 0px;
 }
 } 
+ol.breadcrumb {
+	background-color: rgba(8,0,0,0);
+}

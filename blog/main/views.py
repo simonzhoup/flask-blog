@@ -20,7 +20,9 @@ from logging.handlers import SMTPHandler
 def utility_processor():
     '''文处理器，在每个视图函数调用之前运行，可以向模板中传递参数，以字典方式'''
     questions = Question.query.order_by(Question.timestamp).limit(5).all()
-    return dict(Tag=Tag, random=random, search=SearchForm(), questions=questions[::-1])
+    tags = Tag.query.all()
+    random.shuffle(tags)
+    return dict(tags=tags, random=random, search=SearchForm(), questions=questions[::-1])
 
 
 @main.route('/search/<xxx>', methods=['GET', 'POST'])
@@ -96,7 +98,7 @@ def user_seting():
 def home():
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=5, error_out=False)
+        page, per_page=10, error_out=False)
     posts = pagination.items[::-1]
     uc = User.query.count()
     pc = Post.query.count()
@@ -124,6 +126,7 @@ def user_index(id):
     c1 = Follow.query.filter_by(follower_id=user.id).count()
     c2 = Follow.query.filter_by(followed_id=user.id).count()
     show = request.cookies.get('show', '1')
+    page = request.args.get('page', 1, type=int)
     if show == '1':
         q = Post
     elif show == '2':
@@ -132,12 +135,11 @@ def user_index(id):
         q = Comments
     elif show == '4':
         q = Question
-    posts = db.session.query(q).filter_by(
-        author=user.id).order_by(q.timestamp).all()
-    # if show == '0':
-    #     post = db.session.query(Post).join(Answer).join(Comments).join(
-    #         Question).filter_by(author=user.id).order_by(timestamp).all()
-    return render_template('index.html', show=show, user=user, Topic=Topic, posts=posts[::-1], index='index,info', c1=c1, c2=c2, Comments=Comments, Post=Post, Question=Question)
+    pagination = q.query.filter_by(
+        author=user.id).order_by(q.timestamp).paginate(
+        page, per_page=10, error_out=False)
+    posts = pagination.items[::-1]
+    return render_template('index.html', show=show, user=user, Topic=Topic, pagination=pagination, posts=posts, index='index,info', c1=c1, c2=c2, Comments=Comments, Post=Post, Question=Question)
 
 
 @main.route('/all/<id>')
@@ -344,7 +346,7 @@ def post(id):
                            post_id=p.id, body=commentform.body.data, post_author_id=p.author)
         db.session.add(comment)
         db.session.commit()
-        x = re.match('.*@(.+)\s.*', commentform.body.data)
+        x = re.match('.*@(.+)&nbsp;.*', commentform.body.data)
         if x:
             username = x.group(1)
             u = User.query.filter_by(username=username).first()

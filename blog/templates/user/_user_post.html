@@ -1,3 +1,4 @@
+{% import "_macros.html" as macros %}
 
 
 <div class="panel panel-default col-xs-12" style="padding-bottom: 20px;">
@@ -82,7 +83,12 @@
 				</p>
 				{% endif %}
 		</li>
-		{% endfor %}		
+		{% endfor %}	
+		{% if pagination %} 
+		<div class="pagination pull-right">
+		    {{ macros.pagination_widget(pagination, 'main.user_index',id=user.id) }}
+		</div>
+		{% endif %}				
 	</ul>
 	{% endif %}
 </div>

@@ -53,10 +53,10 @@
 		</h3>
 	</div>
 	<div class="panel-body">
-		{% for tag in Tag.query.all() %}
+		{% for tag in tags %}
 		{% set color = random.choice(['default','primary','info']) %}
 		{% set size = random.choice(['sm','xs']) %}
-		<a href="{{ url_for('main.post_for_tag',tag=tag.id)}}"><button type="button" class="btn btn-{{ color }} btn-{{ size }}">{{ tag.tag_name }}</button></a>
+		<a href="{{ url_for('main.post_for_tag',tag=tag.id)}}"><button type="button" class="btn btn-{{ color }} btn-{{ size }}" style="margin-bottom: 4px;">{{ tag.tag_name }} {% if tag.posts.count() != 0 %}<span class="badge" style="font-size: 6px;">{{ tag.posts.count() }}</span>{% endif %}</button></a>
 		{% endfor %}
 	</div>
 </div>
@@ -76,5 +76,24 @@
         </li>
         {% endfor %}
     </ul>
+</div>
+
+<div class="panel panel-primary col-lg-12" id="footer">
+	<div class="panel-body">
+        <p class="text-center col-xs-12">
+            <a href="mailto:simonzhoup@gmail.com" style="color:#222; margin-left: 3px;margin-right: 3px;"><span class="glyphicon glyphicon-envelope"></span></a> /
+            <a style="color: #222; margin-left: 3px;margin-right: 3px;"><span class="glyphicon glyphicon-qrcode" data-toggle="popover" data-placement="bottom" id='weixin'></span></a> /
+            <a href="https://github.com/simonzhoup" style="margin-left: 3px;margin-right: 3px;"><img src="{{ url_for('static',filename='icon/github.ico') }}" height="16" width="16" style="margin-top: 1px;position: absolute;"></a>
+        </p>
+        <p class="text-center col-xs-12" style="margin-bottom: 5px;"> Powered By <a href="http://flask.pocoo.org/">Flask</a> </p>
+        <p class="text-center col-xs-12" style="margin-bottom: 5px;"> copyright by <a href="mailto:simonzhoup@gmail.com">simonzhoup</a></p>
+    </div>
+	<script>
+    $('#weixin').popover({
+        trigger : 'hover',//鼠标以上时触发弹出提示框
+        html:true,//开启html 为true的话，data-content里就能放html代码了
+        content:'<img src="{{ url_for('static',filename='icon/wechat.jpg') }}">'
+    });
+	</script>
 </div>
 

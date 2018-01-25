@@ -86,12 +86,12 @@
 			</div>
 			<div class="col-sm-1 col-sm-offset-4">
 				<p></p>
-				<button type="button" class="btn btn-success btn-xs" id="reply" onclick="editor.txt.html('<a href=>@{{ c.comment_author.username }}&nbsp;</i>')">
+				<a href="#edit_comment"><button type="button" class="btn btn-success btn-xs" id="reply" onclick="editor.txt.html('<p><a href=&quot;{{ url_for('main.user_index',id=c.comment_author.id) }}&quot;>@{{ c.comment_author.username }}&nbsp;</a></p>')">
 				<span class="glyphicon glyphicon-comment"></span> 回复
 				</button></a>
 			</div>
-			<hr align=center width=100% color=#987cb9 size=2 style="margin: 0px;">
-			<div class="comment-body col-sm-12">
+<!-- 			<hr align=center width=100% color=#987cb9 size=2 style="margin: 0px;">
+ -->			<div class="comment-body col-sm-12">
 				<h4>{{ c.body|safe }}</h4>
 			</div>
 		</div>

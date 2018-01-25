@@ -3,6 +3,7 @@
 {% import "_macros.html" as macros %}
 
 {% block right %}
+<div class="index-body">
 {% for p in posts %}
 <div class="panel panel-default">
 	<div class="panel-heading">
@@ -36,8 +37,9 @@
 </div>
 {% endfor %}
 {% if data['pagination'] %} 
-<div class="pagination pull-right">
+<div class="pagination">
     {{ macros.pagination_widget(data['pagination'], 'main.home') }}
 </div>
 {% endif %}
+</div>
 {% endblock %}

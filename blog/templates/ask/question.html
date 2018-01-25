@@ -113,7 +113,7 @@
 				</div>
 			</div>
 			<div class="col-xs-2 pull-right">
-				<button type="button" class="btn btn-success btn-xs" id="read">
+				<a href="#edit_comment"><button type="button" class="btn btn-success btn-xs" id="read"  onclick="editor.txt.html('<i><a href=&quot;{{ url_for('main.user_index',id=c.author) }}&quot;>@{{ User.query.filter_by(id=c.author).first().username }}&nbsp;</a></i>')">
 				<span class="glyphicon glyphicon-comment"></span> 回复
 				</button></a>
 			</div>
