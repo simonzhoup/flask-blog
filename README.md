@@ -11,7 +11,7 @@ $ python manage.py db upgrade
 $ python manage.py runserver 
 </code>
 </pre>
-<br />
+
 ### 功能
 
 
@@ -29,6 +29,7 @@ $ python manage.py runserver
 * 简单的后台管理系统（完成中...
 * ......
 
-<br />
+
 ### 其它
+
 * [点击这里](http://ocooc.cc) 可以查看网站效果
