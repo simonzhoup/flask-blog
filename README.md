@@ -12,7 +12,7 @@ $ python manage.py runserver
 </code>
 </pre>
 <br />
-###功能
+### 功能
 
 
 * 注册/登录系统
@@ -30,5 +30,5 @@ $ python manage.py runserver
 * ......
 
 <br />
-###其它
-[点击这里](http://ocooc.cc)可以查看网站效果
+### 其它
+* [点击这里](http://ocooc.cc) 可以查看网站效果
