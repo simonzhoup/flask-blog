@@ -31,4 +31,4 @@ $ python manage.py runserver
 
 <br />
 ###其它
-<p>[点击这里](http://ocooc.cc)可以查看网站效果</p>
+[点击这里](http://ocooc.cc)可以查看网站效果
