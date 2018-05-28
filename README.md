@@ -35,6 +35,10 @@
 ![](/Screenshots/posts.png)
 ### 新文章
 ![](/Screenshots/new.png)
+### 用户主页
+![](/Screenshots/user.png)
+### 消息
+![](/Screenshots/message.png)
 ### 问答
 ![](/Screenshots/qa.png)
 ### 问题
@@ -54,12 +58,12 @@ $ python manage.py db init
 #自动创建迁移脚本
 $ python manage.py db migrate -m "initial migration"
 
-* 更新数据库
+#更新数据库
 $ python manage.py db upgrade
 ```
 
 
-## 启动程序
+* 启动程序
 ```python
 $ python manage.py runserver
 ```
@@ -70,6 +74,6 @@ $ python manage.py runserver
 
 
 
-### 其它
+## 其它
 
 * [点击这里](http://ocooc.cc) 可以查看网站效果
