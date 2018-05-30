@@ -27,6 +27,6 @@ class UserRegister(FlaskForm):
 class UserLogin(FlaskForm):
     email = StringField(u'邮箱：', validators=[
                         Required(), Email(), Length(1, 64)])
-    password = StringField(
+    password = PasswordField(
         u'密码：', validators=[Required(), Length(1, 64)])
     submit = SubmitField(u'登录')
